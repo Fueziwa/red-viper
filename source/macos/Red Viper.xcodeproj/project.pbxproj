@@ -1,0 +1,451 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		/* App source files */
+		A0000001201 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001001 /* main.m */; };
+		A0000001202 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001002 /* AppDelegate.m */; };
+		A0000001203 /* MainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001003 /* MainWindow.m */; };
+
+		/* C core files */
+		A0000002201 /* v810_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002001 /* v810_cpu.c */; };
+		A0000002202 /* interpreter.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002002 /* interpreter.c */; };
+		A0000002203 /* v810_mem.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002003 /* v810_mem.c */; };
+		A0000002204 /* v810_ins.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002004 /* v810_ins.c */; };
+		A0000002205 /* vb_set.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002005 /* vb_set.c */; };
+		A0000002206 /* rom_db.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002006 /* rom_db.c */; };
+		A0000002207 /* patches.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002007 /* patches.c */; };
+		A0000002208 /* replay.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002008 /* replay.c */; };
+		A0000002209 /* video_common.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002009 /* video_common.c */; };
+		A0000002210 /* ini.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002010 /* ini.c */; };
+
+		/* Stubs */
+		A0000003201 /* minizip_stub.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003001 /* minizip_stub.c */; };
+
+		/* Frameworks */
+		A0000004201 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004001 /* AppKit.framework */; };
+		A0000004202 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004002 /* Foundation.framework */; };
+		A0000004203 /* libarchive.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004003 /* libarchive.tbd */; };
+		A0000004204 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004004 /* libz.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		/* App target */
+		A0000000001 /* Red Viper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Red Viper.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		/* App source files */
+		A0000001001 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A0000001002 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A0000001003 /* MainWindow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainWindow.m; sourceTree = "<group>"; };
+		A0000001004 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A0000001005 /* MainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainWindow.h; sourceTree = "<group>"; };
+		A0000001006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A0000001007 /* Red Viper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Red Viper.entitlements"; sourceTree = "<group>"; };
+
+		/* C core files */
+		A0000002001 /* v810_cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_cpu.c; path = ../../source/common/v810_cpu.c; sourceTree = "<group>"; };
+		A0000002002 /* interpreter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = interpreter.c; path = ../../source/common/interpreter.c; sourceTree = "<group>"; };
+		A0000002003 /* v810_mem.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_mem.c; path = ../../source/common/v810_mem.c; sourceTree = "<group>"; };
+		A0000002004 /* v810_ins.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_ins.c; path = ../../source/common/v810_ins.c; sourceTree = "<group>"; };
+		A0000002005 /* vb_set.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = vb_set.c; path = ../../source/common/vb_set.c; sourceTree = "<group>"; };
+		A0000002006 /* rom_db.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = rom_db.c; path = ../../source/common/rom_db.c; sourceTree = "<group>"; };
+		A0000002007 /* patches.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = patches.c; path = ../../source/common/patches.c; sourceTree = "<group>"; };
+		A0000002008 /* replay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = replay.c; path = ../../source/common/replay.c; sourceTree = "<group>"; };
+		A0000002009 /* video_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = video_common.c; path = ../../source/common/video_common.c; sourceTree = "<group>"; };
+		A0000002010 /* ini.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = ini.c; path = ../../source/common/inih/ini.c; sourceTree = "<group>"; };
+
+		/* Stubs */
+		A0000003001 /* minizip_stub.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minizip_stub.c; sourceTree = "<group>"; };
+		A0000003002 /* unzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+
+		/* Frameworks */
+		A0000004001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		A0000004002 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A0000004003 /* libarchive.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libarchive.tbd; path = usr/lib/libarchive.tbd; sourceTree = SDKROOT; };
+		A0000004004 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A0000005001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0000004201 /* AppKit.framework in Frameworks */,
+				A0000004202 /* Foundation.framework in Frameworks */,
+				A0000004203 /* libarchive.tbd in Frameworks */,
+				A0000004204 /* libz.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A0000006001 = {
+			isa = PBXGroup;
+			children = (
+				A0000006002 /* Red Viper */,
+				A0000006003 /* Core */,
+				A0000006004 /* Stubs */,
+				A0000006005 /* Frameworks */,
+				A0000006006 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A0000006002 /* Red Viper */ = {
+			isa = PBXGroup;
+			children = (
+				A0000001001 /* main.m */,
+				A0000001004 /* AppDelegate.h */,
+				A0000001002 /* AppDelegate.m */,
+				A0000001005 /* MainWindow.h */,
+				A0000001003 /* MainWindow.m */,
+				A0000001006 /* Info.plist */,
+				A0000001007 /* Red Viper.entitlements */,
+			);
+			path = ".";
+			sourceTree = "<group>";
+		};
+		A0000006003 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A0000002001 /* v810_cpu.c */,
+				A0000002002 /* interpreter.c */,
+				A0000002003 /* v810_mem.c */,
+				A0000002004 /* v810_ins.c */,
+				A0000002005 /* vb_set.c */,
+				A0000002006 /* rom_db.c */,
+				A0000002007 /* patches.c */,
+				A0000002008 /* replay.c */,
+				A0000002009 /* video_common.c */,
+				A0000002010 /* ini.c */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		A0000006004 /* Stubs */ = {
+			isa = PBXGroup;
+			children = (
+				A0000003001 /* minizip_stub.c */,
+				A0000006007 /* minizip */,
+			);
+			path = Stubs;
+			sourceTree = "<group>";
+		};
+		A0000006005 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A0000004001 /* AppKit.framework */,
+				A0000004002 /* Foundation.framework */,
+				A0000004003 /* libarchive.tbd */,
+				A0000004004 /* libz.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A0000006006 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0000000001 /* Red Viper.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A0000006007 /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				A0000003002 /* unzip.h */,
+			);
+			path = minizip;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A0000007001 /* Red Viper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0000009001 /* Build configuration list for PBXNativeTarget "Red Viper" */;
+			buildPhases = (
+				A0000007002 /* Sources */,
+				A0000005001 /* Frameworks */,
+				A0000007003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Red Viper";
+			productName = "Red Viper";
+			productReference = A0000000001 /* Red Viper.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A0000008001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A0000007001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A0000008002 /* Build configuration list for PBXProject "Red Viper" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A0000006001;
+			productRefGroup = A0000006006 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A0000007001 /* Red Viper */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A0000007003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A0000007002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0000001201 /* main.m in Sources */,
+				A0000001202 /* AppDelegate.m in Sources */,
+				A0000001203 /* MainWindow.m in Sources */,
+				A0000002201 /* v810_cpu.c in Sources */,
+				A0000002202 /* interpreter.c in Sources */,
+				A0000002203 /* v810_mem.c in Sources */,
+				A0000002204 /* v810_ins.c in Sources */,
+				A0000002205 /* vb_set.c in Sources */,
+				A0000002206 /* rom_db.c in Sources */,
+				A0000002207 /* patches.c in Sources */,
+				A0000002208 /* replay.c in Sources */,
+				A0000002209 /* video_common.c in Sources */,
+				A0000002210 /* ini.c in Sources */,
+				A0000003201 /* minizip_stub.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A0000010001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUGLEVEL=0",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../include",
+					"$(PROJECT_DIR)/Stubs",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A0000010002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/../../include",
+					"$(PROJECT_DIR)/Stubs",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A0000010003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Red Viper.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.redviper.Red-Viper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		A0000010004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Red Viper.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = "";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.redviper.Red-Viper";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A0000008002 /* Build configuration list for PBXProject "Red Viper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000010001 /* Debug */,
+				A0000010002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0000009001 /* Build configuration list for PBXNativeTarget "Red Viper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0000010003 /* Debug */,
+				A0000010004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = A0000008001 /* Project object */;
+}
