@@ -26,6 +26,10 @@
 
 		/* Stubs */
 		A0000003201 /* minizip_stub.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003001 /* minizip_stub.c */; };
+		A0000003202 /* display_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003003 /* display_stubs.c */; };
+		A0000003203 /* sound_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003004 /* sound_stubs.c */; };
+		A0000003204 /* input_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003005 /* input_stubs.c */; };
+		A0000003205 /* drc_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003006 /* drc_stubs.c */; };
 
 		/* Frameworks */
 		A0000004201 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004001 /* AppKit.framework */; };
@@ -62,6 +66,10 @@
 		/* Stubs */
 		A0000003001 /* minizip_stub.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minizip_stub.c; sourceTree = "<group>"; };
 		A0000003002 /* unzip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		A0000003003 /* display_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = display_stubs.c; sourceTree = "<group>"; };
+		A0000003004 /* sound_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sound_stubs.c; sourceTree = "<group>"; };
+		A0000003005 /* input_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = input_stubs.c; sourceTree = "<group>"; };
+		A0000003006 /* drc_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = drc_stubs.c; sourceTree = "<group>"; };
 
 		/* Frameworks */
 		A0000004001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -131,6 +139,10 @@
 			isa = PBXGroup;
 			children = (
 				A0000003001 /* minizip_stub.c */,
+				A0000003003 /* display_stubs.c */,
+				A0000003004 /* sound_stubs.c */,
+				A0000003005 /* input_stubs.c */,
+				A0000003006 /* drc_stubs.c */,
 				A0000006007 /* minizip */,
 			);
 			path = Stubs;
@@ -244,6 +256,10 @@
 				A0000002209 /* video_common.c in Sources */,
 				A0000002210 /* ini.c in Sources */,
 				A0000003201 /* minizip_stub.c in Sources */,
+				A0000003202 /* display_stubs.c in Sources */,
+				A0000003203 /* sound_stubs.c in Sources */,
+				A0000003204 /* input_stubs.c in Sources */,
+				A0000003205 /* drc_stubs.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
