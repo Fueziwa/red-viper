@@ -13,16 +13,15 @@
 // Global display cache - required by core
 VB_DSPCACHE tDSPCACHE;
 
-// Globals from vb_dsp.h
-bool tileVisible[2048];
-int blankTile = 0;
+// Note: tileVisible, blankTile, and clearCache are defined in video_common.c
+
+// Additional globals from vb_dsp.h
 uint8_t maxRepeat = 1;
 int eye_count = 1;
 
 // Display functions - stub implementations
 void video_init(void) {
     memset(&tDSPCACHE, 0, sizeof(tDSPCACHE));
-    memset(tileVisible, 0, sizeof(tileVisible));
 }
 
 void video_render(int displayed_fb, bool on_time) {
@@ -45,10 +44,6 @@ void V810_SetPal(int BRTA, int BRTB, int BRTC) {
 
 void V810_Dsp_Frame(int left) {
     (void)left;
-}
-
-void clearCache(void) {
-    memset(&tDSPCACHE, 0, sizeof(tDSPCACHE));
 }
 
 // Software rendering stubs - also required by core

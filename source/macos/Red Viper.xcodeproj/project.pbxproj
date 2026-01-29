@@ -11,6 +11,7 @@
 		A0000001201 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001001 /* main.m */; };
 		A0000001202 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001002 /* AppDelegate.m */; };
 		A0000001203 /* MainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001003 /* MainWindow.m */; };
+		A0000001204 /* EmulatorBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001008 /* EmulatorBridge.m */; };
 
 		/* C core files */
 		A0000002201 /* v810_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002001 /* v810_cpu.c */; };
@@ -50,6 +51,8 @@
 		A0000001005 /* MainWindow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainWindow.h; sourceTree = "<group>"; };
 		A0000001006 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A0000001007 /* Red Viper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Red Viper.entitlements"; sourceTree = "<group>"; };
+		A0000001008 /* EmulatorBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulatorBridge.m; sourceTree = "<group>"; };
+		A0000001009 /* EmulatorBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulatorBridge.h; sourceTree = "<group>"; };
 
 		/* C core files */
 		A0000002001 /* v810_cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_cpu.c; path = ../../source/common/v810_cpu.c; sourceTree = "<group>"; };
@@ -112,6 +115,8 @@
 				A0000001002 /* AppDelegate.m */,
 				A0000001005 /* MainWindow.h */,
 				A0000001003 /* MainWindow.m */,
+				A0000001009 /* EmulatorBridge.h */,
+				A0000001008 /* EmulatorBridge.m */,
 				A0000001006 /* Info.plist */,
 				A0000001007 /* Red Viper.entitlements */,
 			);
@@ -245,6 +250,7 @@
 				A0000001201 /* main.m in Sources */,
 				A0000001202 /* AppDelegate.m in Sources */,
 				A0000001203 /* MainWindow.m in Sources */,
+				A0000001204 /* EmulatorBridge.m in Sources */,
 				A0000002201 /* v810_cpu.c in Sources */,
 				A0000002202 /* interpreter.c in Sources */,
 				A0000002203 /* v810_mem.c in Sources */,

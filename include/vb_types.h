@@ -20,7 +20,7 @@
 #define INT64U uint64_t //64 bit Unsigned
 
 // TODO: Ideally we shouldn't need this
-#ifndef __3DS__
+#if !defined(__3DS__) && !defined(__APPLE__)
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
@@ -43,6 +43,25 @@ typedef volatile s64 vs64;
 
 typedef u32 Handle;
 typedef s32 Result;
+
+#define linearAlloc malloc
+#define linearFree free
+#define linearMemAlign(size, align) aligned_alloc(align, size)
+#define RGB565(r,g,b)  (((b)&0x1f)|(((g)&0x3f)<<5)|(((r)&0x1f)<<11))
+#define GFX_LEFT 0
+#define GFX_RIGHT 1
+#elif defined(__APPLE__)
+// macOS-specific type definitions
+// Avoid conflicts with MacTypes.h (Handle is already defined there)
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+typedef int64_t s64;
 
 #define linearAlloc malloc
 #define linearFree free

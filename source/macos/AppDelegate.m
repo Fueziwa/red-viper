@@ -5,10 +5,14 @@
 
 #import "AppDelegate.h"
 #import "MainWindow.h"
+#import "EmulatorBridge.h"
 
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    // Initialize the emulator core first
+    [[EmulatorBridge sharedBridge] initialize];
+    
     // Create the main window
     NSRect frame = NSMakeRect(0, 0, 768, 448);  // 2x Virtual Boy resolution (384x224)
     NSWindowStyleMask style = NSWindowStyleMaskTitled |
@@ -40,7 +44,8 @@
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
-    // Cleanup when the app terminates
+    // Shutdown the emulator core
+    [[EmulatorBridge sharedBridge] shutdown];
 }
 
 @end
