@@ -12,6 +12,7 @@
 		A0000001202 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001002 /* AppDelegate.m */; };
 		A0000001203 /* MainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001003 /* MainWindow.m */; };
 		A0000001204 /* EmulatorBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001008 /* EmulatorBridge.m */; };
+		A0000001205 /* ROMLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001010 /* ROMLoader.m */; };
 
 		/* C core files */
 		A0000002201 /* v810_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002001 /* v810_cpu.c */; };
@@ -35,7 +36,7 @@
 		/* Frameworks */
 		A0000004201 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004001 /* AppKit.framework */; };
 		A0000004202 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004002 /* Foundation.framework */; };
-		A0000004203 /* libarchive.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004003 /* libarchive.tbd */; };
+		A0000004203 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004003 /* libarchive.dylib */; };
 		A0000004204 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004004 /* libz.tbd */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,8 @@
 		A0000001007 /* Red Viper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Red Viper.entitlements"; sourceTree = "<group>"; };
 		A0000001008 /* EmulatorBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulatorBridge.m; sourceTree = "<group>"; };
 		A0000001009 /* EmulatorBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulatorBridge.h; sourceTree = "<group>"; };
+		A0000001010 /* ROMLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ROMLoader.m; sourceTree = "<group>"; };
+		A0000001011 /* ROMLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ROMLoader.h; sourceTree = "<group>"; };
 
 		/* C core files */
 		A0000002001 /* v810_cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_cpu.c; path = ../../source/common/v810_cpu.c; sourceTree = "<group>"; };
@@ -77,7 +80,7 @@
 		/* Frameworks */
 		A0000004001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		A0000004002 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		A0000004003 /* libarchive.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libarchive.tbd; path = usr/lib/libarchive.tbd; sourceTree = SDKROOT; };
+		A0000004003 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /opt/homebrew/opt/libarchive/lib/libarchive.dylib; sourceTree = "<absolute>"; };
 		A0000004004 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -88,7 +91,7 @@
 			files = (
 				A0000004201 /* AppKit.framework in Frameworks */,
 				A0000004202 /* Foundation.framework in Frameworks */,
-				A0000004203 /* libarchive.tbd in Frameworks */,
+				A0000004203 /* libarchive.dylib in Frameworks */,
 				A0000004204 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,6 +120,8 @@
 				A0000001003 /* MainWindow.m */,
 				A0000001009 /* EmulatorBridge.h */,
 				A0000001008 /* EmulatorBridge.m */,
+				A0000001011 /* ROMLoader.h */,
+				A0000001010 /* ROMLoader.m */,
 				A0000001006 /* Info.plist */,
 				A0000001007 /* Red Viper.entitlements */,
 			);
@@ -158,7 +163,7 @@
 			children = (
 				A0000004001 /* AppKit.framework */,
 				A0000004002 /* Foundation.framework */,
-				A0000004003 /* libarchive.tbd */,
+				A0000004003 /* libarchive.dylib */,
 				A0000004004 /* libz.tbd */,
 			);
 			name = Frameworks;
@@ -251,6 +256,7 @@
 				A0000001202 /* AppDelegate.m in Sources */,
 				A0000001203 /* MainWindow.m in Sources */,
 				A0000001204 /* EmulatorBridge.m in Sources */,
+				A0000001205 /* ROMLoader.m in Sources */,
 				A0000002201 /* v810_cpu.c in Sources */,
 				A0000002202 /* interpreter.c in Sources */,
 				A0000002203 /* v810_mem.c in Sources */,
@@ -327,6 +333,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../../include",
 					"$(PROJECT_DIR)/Stubs",
+					"/opt/homebrew/opt/libarchive/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -385,6 +392,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../../include",
 					"$(PROJECT_DIR)/Stubs",
+					"/opt/homebrew/opt/libarchive/include",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -412,6 +420,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"/opt/homebrew/opt/libarchive/lib",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.redviper.Red-Viper";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -437,6 +448,9 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"/opt/homebrew/opt/libarchive/lib",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.redviper.Red-Viper";
