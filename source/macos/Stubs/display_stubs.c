@@ -45,11 +45,3 @@ void V810_SetPal(int BRTA, int BRTB, int BRTC) {
 void V810_Dsp_Frame(int left) {
     (void)left;
 }
-
-// Software rendering stubs - also required by core
-void video_soft_render(int drawn_fb) {
-    (void)drawn_fb;
-}
-
-void update_texture_cache_soft(void) {
-}

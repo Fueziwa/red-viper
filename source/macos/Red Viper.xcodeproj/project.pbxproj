@@ -26,6 +26,7 @@
 		A0000002208 /* replay.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002008 /* replay.c */; };
 		A0000002209 /* video_common.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002009 /* video_common.c */; };
 		A0000002210 /* ini.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002010 /* ini.c */; };
+		A0000002211 /* video_soft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0000002011 /* video_soft.cpp */; };
 
 		/* Stubs */
 		A0000003201 /* minizip_stub.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003001 /* minizip_stub.c */; };
@@ -72,6 +73,7 @@
 		A0000002008 /* replay.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = replay.c; path = ../../source/common/replay.c; sourceTree = "<group>"; };
 		A0000002009 /* video_common.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = video_common.c; path = ../../source/common/video_common.c; sourceTree = "<group>"; };
 		A0000002010 /* ini.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = ini.c; path = ../../source/common/inih/ini.c; sourceTree = "<group>"; };
+		A0000002011 /* video_soft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = video_soft.cpp; path = ../../source/common/video_soft.cpp; sourceTree = "<group>"; };
 
 		/* Stubs */
 		A0000003001 /* minizip_stub.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = minizip_stub.c; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				A0000002008 /* replay.c */,
 				A0000002009 /* video_common.c */,
 				A0000002010 /* ini.c */,
+				A0000002011 /* video_soft.cpp */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -277,6 +280,7 @@
 				A0000002208 /* replay.c in Sources */,
 				A0000002209 /* video_common.c in Sources */,
 				A0000002210 /* ini.c in Sources */,
+				A0000002211 /* video_soft.cpp in Sources */,
 				A0000003201 /* minizip_stub.c in Sources */,
 				A0000003202 /* display_stubs.c in Sources */,
 				A0000003203 /* sound_stubs.c in Sources */,
