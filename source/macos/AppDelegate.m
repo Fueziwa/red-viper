@@ -5,6 +5,7 @@
 
 #import "AppDelegate.h"
 #import "MainWindow.h"
+#import "EmulatorView.h"
 #import "EmulatorBridge.h"
 #import "ROMLoader.h"
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
@@ -19,11 +20,13 @@
     [[EmulatorBridge sharedBridge] initialize];
     
     // Create the main window
+    // Default to 2x scale (768x448) per user decision
     NSRect frame = NSMakeRect(0, 0, 768, 448);  // 2x Virtual Boy resolution (384x224)
+    
+    // Window is NOT resizable by dragging (fixed integer scales only)
     NSWindowStyleMask style = NSWindowStyleMaskTitled |
                               NSWindowStyleMaskClosable |
-                              NSWindowStyleMaskMiniaturizable |
-                              NSWindowStyleMaskResizable;
+                              NSWindowStyleMaskMiniaturizable;
     
     self.window = [[NSWindow alloc] initWithContentRect:frame
                                               styleMask:style
@@ -33,9 +36,11 @@
     [self.window setTitle:@"Red Viper"];
     [self.window center];
     
-    // Set up the content view with solid black background
-    MainWindow *contentView = [[MainWindow alloc] initWithFrame:frame];
-    [self.window setContentView:contentView];
+    // Create EmulatorView as the content view
+    EmulatorView *emulatorView = [[EmulatorView alloc] initWithFrame:frame];
+    [emulatorView setScale:2];  // Start at 2x scale
+    [self.window setContentView:emulatorView];
+    self.emulatorView = emulatorView;
     
     // Show the window
     [self.window makeKeyAndOrderFront:nil];
