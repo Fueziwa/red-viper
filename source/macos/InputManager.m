@@ -246,9 +246,14 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
     // Start with battery OK flag (bit 1 set, bit 0 clear)
     uint16_t result = 0x0002;
     
-    // Check each pressed key and OR in the corresponding button flag
+    // Per CONTEXT.md: Gamepad overrides keyboard when connected
+    if ([self isGamepadActive]) {
+        result |= [self pollGamepadState];
+        return result;
+    }
+    
+    // Fall back to keyboard input
     for (NSNumber *keyCode in _pressedKeys) {
-        // Check if this key code is mapped to a button
         NSNumber *buttonFlag = _keyToButtonMap[keyCode];
         if (buttonFlag) {
             result |= [buttonFlag unsignedShortValue];
