@@ -228,6 +228,9 @@
         // Update window title to show ROM name
         NSString *romName = [[url lastPathComponent] stringByDeletingPathExtension];
         [self.window setTitle:[NSString stringWithFormat:@"Red Viper - %@", romName]];
+        
+        // Start the emulation render loop
+        [self.emulatorView startEmulation];
     }
 }
 
@@ -266,6 +269,9 @@
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
+    // Stop the emulation render loop
+    [self.emulatorView stopEmulation];
+    
     // Clean up extracted ROM files
     [[ROMLoader sharedLoader] cleanup];
     
