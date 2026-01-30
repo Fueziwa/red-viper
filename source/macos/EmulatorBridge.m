@@ -187,6 +187,10 @@ extern VB_OPT tVBOpt;
     _romLoaded = YES;
     _currentROMPath = romPath;
     
+    // Use software rendering mode (like linux-test does)
+    // macOS doesn't have 3DS GPU hardware, so we use CPU-only rendering
+    tVBOpt.RENDERMODE = RM_CPUONLY;
+    
     // Initialize display cache - required for software renderer to work
     clearCache();
     
@@ -199,6 +203,9 @@ extern VB_OPT tVBOpt;
 
 - (void)runFrame {
     if (!_romLoaded) return;
+    
+    // Clear cache every frame like linux-test does
+    clearCache();
     
     // Check if we should render (same conditions as linux-test/main.c)
     // Must check BEFORE v810_run() modifies state
@@ -217,21 +224,18 @@ extern VB_OPT tVBOpt;
         
         // Clear cache flags after rendering
         tDSPCACHE.CharCacheInvalid = false;
+        memset(tDSPCACHE.BGCacheInvalid, 0, sizeof(tDSPCACHE.BGCacheInvalid));
         memset(tDSPCACHE.CharacterCache, 0, sizeof(tDSPCACHE.CharacterCache));
+    }
+    
+    // Always update the display (like linux-test sdl_flush)
+    // This shows whatever is in the current displayed framebuffer
+    if (self.frameCallback) {
+        self.frameCallback();
     }
     
     // Run one frame of emulation
     v810_run();
-    
-    // Check if a new frame was rendered (display swap happened)
-    if (vb_state->tVIPREG.newframe) {
-        vb_state->tVIPREG.newframe = false;
-        
-        // Invoke the frame callback if set
-        if (self.frameCallback) {
-            self.frameCallback();
-        }
-    }
 }
 
 - (void)reset {

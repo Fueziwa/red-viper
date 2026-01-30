@@ -21,14 +21,37 @@
 const NSInteger kVBDisplayWidth = 384;
 const NSInteger kVBDisplayHeight = 224;
 
-/// Hardware-accurate Virtual Boy red palette
-/// The VB uses red LEDs with 4 brightness levels
-static const uint8_t kRedPalette[4][4] = {
-    {0,   0, 0, 255},  // Shade 0: Black (off)
-    {64,  0, 0, 255},  // Shade 1: Dark red
-    {128, 0, 0, 255},  // Shade 2: Medium red
-    {255, 0, 0, 255},  // Shade 3: Bright red
-};
+/// Calculate brightness values from VIP registers (like linux-test)
+/// The VB uses red LEDs with brightness controlled by BRTA, BRTB, BRTC registers
+static void getBrightnessLevels(uint8_t *levels) {
+    if (!vb_state) {
+        levels[0] = 0;
+        levels[1] = 64;
+        levels[2] = 128;
+        levels[3] = 255;
+        return;
+    }
+    
+    // Use VIP brightness registers like linux-test does
+    // shade[0] = 0 (black)
+    // shade[1] = BRTA
+    // shade[2] = BRTB  
+    // shade[3] = BRTA + BRTB + BRTC
+    uint32_t brta = vb_state->tVIPREG.BRTA;
+    uint32_t brtb = vb_state->tVIPREG.BRTB;
+    uint32_t brtc = vb_state->tVIPREG.BRTC;
+    
+    uint32_t shade0 = 0;
+    uint32_t shade1 = brta * 2;
+    uint32_t shade2 = brtb * 2;
+    uint32_t shade3 = (brta + brtb + brtc) * 2;
+    
+    // Clamp to 255
+    levels[0] = shade0 > 255 ? 255 : (uint8_t)shade0;
+    levels[1] = shade1 > 255 ? 255 : (uint8_t)shade1;
+    levels[2] = shade2 > 255 ? 255 : (uint8_t)shade2;
+    levels[3] = shade3 > 255 ? 255 : (uint8_t)shade3;
+}
 
 // Forward declaration for private methods
 @interface EmulatorView ()
@@ -164,6 +187,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     // Left eye FB0 at offset 0x00000, FB1 at offset 0x08000
     uint16_t *fb = (uint16_t *)(vb_state->V810_DISPLAY_RAM.off + 0x8000 * displayedFB);
     
+    // Get brightness levels from VIP registers
+    uint8_t brightnessLevels[4];
+    getBrightnessLevels(brightnessLevels);
+    
     // Convert 2-bit packed pixels to RGBA
     // Virtual Boy framebuffer is column-major:
     // - Each column x has 32 uint16_t words (256 pixels, only 224 visible)
@@ -171,17 +198,23 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     // - Pixel (x, y): word = fb[x * 32 + y / 8], shift = (y % 8) * 2, value = (word >> shift) & 0x03
     
     for (int x = 0; x < kVBDisplayWidth; x++) {
-        for (int y = 0; y < kVBDisplayHeight; y++) {
-            int wordIndex = x * 32 + (y >> 3);
-            int shift = (y & 7) * 2;
-            int shade = (fb[wordIndex] >> shift) & 0x03;
+        for (int y = 0; y < kVBDisplayHeight; y += 8) {
+            // Read a word containing 8 pixels (like linux-test)
+            uint16_t vb_word = fb[x * 32 + (y / 8)];
             
-            // Write RGBA pixel to buffer
-            int pixelOffset = (y * kVBDisplayWidth + x) * 4;
-            _pixelBuffer[pixelOffset + 0] = kRedPalette[shade][0];  // R
-            _pixelBuffer[pixelOffset + 1] = kRedPalette[shade][1];  // G
-            _pixelBuffer[pixelOffset + 2] = kRedPalette[shade][2];  // B
-            _pixelBuffer[pixelOffset + 3] = kRedPalette[shade][3];  // A
+            for (int i = 0; i < 8 && (y + i) < kVBDisplayHeight; i++) {
+                int shade = vb_word & 0x03;
+                uint8_t brightness = brightnessLevels[shade];
+                
+                // Write RGBA pixel to buffer (red channel only, like VB hardware)
+                int pixelOffset = ((y + i) * kVBDisplayWidth + x) * 4;
+                _pixelBuffer[pixelOffset + 0] = brightness;  // R
+                _pixelBuffer[pixelOffset + 1] = 0;           // G
+                _pixelBuffer[pixelOffset + 2] = 0;           // B
+                _pixelBuffer[pixelOffset + 3] = 255;         // A
+                
+                vb_word >>= 2;
+            }
         }
     }
 }
