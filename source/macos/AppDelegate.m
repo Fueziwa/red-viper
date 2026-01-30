@@ -8,9 +8,12 @@
 #import "EmulatorView.h"
 #import "EmulatorBridge.h"
 #import "ROMLoader.h"
+#import "ControlsConfigController.h"
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-@implementation AppDelegate
+@implementation AppDelegate {
+    ControlsConfigController *_controlsConfigController;
+}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification {
     // Set up the main menu bar
@@ -104,6 +107,21 @@
     [editMenu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
     [editMenuItem setSubmenu:editMenu];
     
+    // Emulation menu
+    NSMenuItem *emulationMenuItem = [[NSMenuItem alloc] init];
+    [mainMenu addItem:emulationMenuItem];
+    
+    NSMenu *emulationMenu = [[NSMenu alloc] initWithTitle:@"Emulation"];
+    
+    NSMenuItem *configControlsItem = [[NSMenuItem alloc] 
+        initWithTitle:@"Configure Controls..."
+               action:@selector(configureControls:)
+        keyEquivalent:@""];
+    [configControlsItem setTarget:self];
+    [emulationMenu addItem:configControlsItem];
+    
+    [emulationMenuItem setSubmenu:emulationMenu];
+    
     // View menu (scale controls)
     NSMenuItem *viewMenuItem = [[NSMenuItem alloc] init];
     [mainMenu addItem:viewMenuItem];
@@ -171,6 +189,15 @@
         [[self.window contentView] setNeedsLayout:YES];
         [self.window setContentSize:[self.emulatorView frame].size];
     }
+}
+
+#pragma mark - Controls Configuration
+
+- (IBAction)configureControls:(id)sender {
+    if (!_controlsConfigController) {
+        _controlsConfigController = [[ControlsConfigController alloc] init];
+    }
+    [_controlsConfigController showModalForWindow:self.window];
 }
 
 #pragma mark - ROM Loading
