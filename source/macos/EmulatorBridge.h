@@ -35,6 +35,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// Reset the emulator (keeps ROM loaded)
 - (void)reset;
 
+/// Callback invoked when a new frame is ready for display
+/// Set this to update the display texture when the C core completes a frame.
+@property (copy, nonatomic, nullable) void (^frameCallback)(void);
+
 @end
 
 NS_ASSUME_NONNULL_END

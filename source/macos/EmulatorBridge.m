@@ -25,6 +25,8 @@ extern VB_OPT tVBOpt;
     NSString *_currentROMPath;
 }
 
+@synthesize frameCallback = _frameCallback;
+
 + (instancetype)sharedBridge {
     static EmulatorBridge *shared = nil;
     static dispatch_once_t onceToken;
@@ -190,6 +192,18 @@ extern VB_OPT tVBOpt;
     
     // Run one frame of emulation
     v810_run();
+    
+    // Check if a new frame was rendered
+    // The C core sets newframe when a display frame completes
+    if (vb_state->tVIPREG.newframe) {
+        // Clear the flag
+        vb_state->tVIPREG.newframe = false;
+        
+        // Invoke the frame callback if set
+        if (self.frameCallback) {
+            self.frameCallback();
+        }
+    }
 }
 
 - (void)reset {
