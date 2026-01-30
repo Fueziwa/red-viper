@@ -44,6 +44,8 @@
 		A0000004203 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004003 /* libarchive.dylib */; };
 		A0000004204 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004004 /* libz.tbd */; };
 		A0000004205 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004005 /* OpenGL.framework */; };
+		A0000004206 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004006 /* CoreVideo.framework */; };
+		A0000004207 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004007 /* GameController.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -98,6 +100,8 @@
 		A0000004003 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /opt/homebrew/opt/libarchive/lib/libarchive.dylib; sourceTree = "<absolute>"; };
 		A0000004004 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		A0000004005 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		A0000004006 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		A0000004007 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +114,8 @@
 				A0000004203 /* libarchive.dylib in Frameworks */,
 				A0000004204 /* libz.tbd in Frameworks */,
 				A0000004205 /* OpenGL.framework in Frameworks */,
+				A0000004206 /* CoreVideo.framework in Frameworks */,
+				A0000004207 /* GameController.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +198,8 @@
 				A0000004003 /* libarchive.dylib */,
 				A0000004004 /* libz.tbd */,
 				A0000004005 /* OpenGL.framework */,
+				A0000004006 /* CoreVideo.framework */,
+				A0000004007 /* GameController.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
