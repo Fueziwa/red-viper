@@ -30,6 +30,33 @@ typedef NS_ENUM(NSInteger, VBButton) {
     VBButtonCount  // 14 total
 };
 
+/// Gamepad button identifiers for binding configuration
+typedef NS_ENUM(NSInteger, GamepadButton) {
+    GamepadButtonA,               // Bottom face button (A on Xbox, X on PS)
+    GamepadButtonB,               // Right face button (B on Xbox, Circle on PS)
+    GamepadButtonX,               // Left face button (X on Xbox, Square on PS)
+    GamepadButtonY,               // Top face button (Y on Xbox, Triangle on PS)
+    GamepadButtonLeftShoulder,
+    GamepadButtonRightShoulder,
+    GamepadButtonLeftTrigger,
+    GamepadButtonRightTrigger,
+    GamepadButtonDpadUp,
+    GamepadButtonDpadDown,
+    GamepadButtonDpadLeft,
+    GamepadButtonDpadRight,
+    GamepadButtonLeftStickUp,
+    GamepadButtonLeftStickDown,
+    GamepadButtonLeftStickLeft,
+    GamepadButtonLeftStickRight,
+    GamepadButtonRightStickUp,
+    GamepadButtonRightStickDown,
+    GamepadButtonRightStickLeft,
+    GamepadButtonRightStickRight,
+    GamepadButtonMenu,            // Start/Options
+    GamepadButtonOptions,         // Back/Share
+    GamepadButtonCount
+};
+
 @interface InputManager : NSObject
 
 /// Shared singleton instance
@@ -81,6 +108,26 @@ typedef NS_ENUM(NSInteger, VBButton) {
 
 /// Get display name for a button (e.g., "Left D-Pad Up", "A Button")
 + (NSString *)displayNameForButton:(VBButton)button;
+
+#pragma mark - Gamepad Binding Customization
+
+/// Get which VB button a gamepad button is mapped to (returns VBButtonCount if unmapped)
+- (VBButton)vbButtonForGamepadButton:(GamepadButton)gamepadButton;
+
+/// Set which VB button a gamepad button maps to
+- (void)setVBButton:(VBButton)vbButton forGamepadButton:(GamepadButton)gamepadButton;
+
+/// Save gamepad bindings to UserDefaults
+- (void)saveGamepadBindings;
+
+/// Load gamepad bindings from UserDefaults (called on init)
+- (void)loadGamepadBindings;
+
+/// Reset gamepad bindings to defaults
+- (void)resetGamepadBindingsToDefaults;
+
+/// Get display name for a gamepad button
++ (NSString *)displayNameForGamepadButton:(GamepadButton)gamepadButton;
 
 @end
 

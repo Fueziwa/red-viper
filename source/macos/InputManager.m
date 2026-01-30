@@ -11,6 +11,9 @@
 /// UserDefaults key for storing key bindings
 static NSString * const kRedViperKeyBindingsKey = @"RedViperKeyBindings";
 
+/// UserDefaults key for storing gamepad bindings
+static NSString * const kRedViperGamepadBindingsKey = @"RedViperGamepadBindings";
+
 /// Analog stick threshold for d-pad activation (0.5 = halfway deflection)
 static const float kAnalogStickThreshold = 0.5f;
 
@@ -47,6 +50,9 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
     
     /// Currently active game controller
     GCController *_activeController;
+    
+    /// Maps GamepadButton (NSNumber) -> VBButton (NSNumber)
+    NSMutableDictionary<NSNumber *, NSNumber *> *_gamepadToVBButtonMap;
 }
 
 #pragma mark - Singleton
@@ -66,9 +72,11 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
         _pressedKeys = [[NSMutableSet alloc] init];
         _buttonToKeyMap = [[NSMutableDictionary alloc] init];
         _keyToButtonMap = [[NSMutableDictionary alloc] init];
+        _gamepadToVBButtonMap = [[NSMutableDictionary alloc] init];
         _activeController = nil;
         
         [self loadBindings];
+        [self loadGamepadBindings];
         
         // Register for controller connect/disconnect notifications
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -210,6 +218,125 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
     }
 }
 
+#pragma mark - Gamepad Binding Customization
+
+- (void)resetGamepadBindingsToDefaults {
+    [_gamepadToVBButtonMap removeAllObjects];
+    
+    // Per CONTEXT.md: A = right face (B on Xbox), B = bottom face (A on Xbox)
+    _gamepadToVBButtonMap[@(GamepadButtonB)] = @(VBButtonA);  // Xbox B -> VB A
+    _gamepadToVBButtonMap[@(GamepadButtonA)] = @(VBButtonB);  // Xbox A -> VB B
+    
+    // D-pad -> Left D-Pad
+    _gamepadToVBButtonMap[@(GamepadButtonDpadUp)] = @(VBButtonLPadUp);
+    _gamepadToVBButtonMap[@(GamepadButtonDpadDown)] = @(VBButtonLPadDown);
+    _gamepadToVBButtonMap[@(GamepadButtonDpadLeft)] = @(VBButtonLPadLeft);
+    _gamepadToVBButtonMap[@(GamepadButtonDpadRight)] = @(VBButtonLPadRight);
+    
+    // Left stick -> Left D-Pad
+    _gamepadToVBButtonMap[@(GamepadButtonLeftStickUp)] = @(VBButtonLPadUp);
+    _gamepadToVBButtonMap[@(GamepadButtonLeftStickDown)] = @(VBButtonLPadDown);
+    _gamepadToVBButtonMap[@(GamepadButtonLeftStickLeft)] = @(VBButtonLPadLeft);
+    _gamepadToVBButtonMap[@(GamepadButtonLeftStickRight)] = @(VBButtonLPadRight);
+    
+    // Right stick -> Right D-Pad
+    _gamepadToVBButtonMap[@(GamepadButtonRightStickUp)] = @(VBButtonRPadUp);
+    _gamepadToVBButtonMap[@(GamepadButtonRightStickDown)] = @(VBButtonRPadDown);
+    _gamepadToVBButtonMap[@(GamepadButtonRightStickLeft)] = @(VBButtonRPadLeft);
+    _gamepadToVBButtonMap[@(GamepadButtonRightStickRight)] = @(VBButtonRPadRight);
+    
+    // Triggers/Shoulders -> L/R
+    _gamepadToVBButtonMap[@(GamepadButtonLeftShoulder)] = @(VBButtonL);
+    _gamepadToVBButtonMap[@(GamepadButtonLeftTrigger)] = @(VBButtonL);
+    _gamepadToVBButtonMap[@(GamepadButtonRightShoulder)] = @(VBButtonR);
+    _gamepadToVBButtonMap[@(GamepadButtonRightTrigger)] = @(VBButtonR);
+    
+    // Start/Select
+    _gamepadToVBButtonMap[@(GamepadButtonMenu)] = @(VBButtonStart);
+    _gamepadToVBButtonMap[@(GamepadButtonOptions)] = @(VBButtonSelect);
+}
+
+- (void)loadGamepadBindings {
+    NSDictionary *saved = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRedViperGamepadBindingsKey];
+    
+    if (!saved || saved.count == 0) {
+        [self resetGamepadBindingsToDefaults];
+        return;
+    }
+    
+    // Convert saved dictionary (string keys) to gamepadToVBButtonMap (NSNumber keys)
+    [_gamepadToVBButtonMap removeAllObjects];
+    for (NSString *buttonKey in saved) {
+        NSNumber *vbButton = saved[buttonKey];
+        GamepadButton gpButton = (GamepadButton)[buttonKey integerValue];
+        if (gpButton >= 0 && gpButton < GamepadButtonCount && [vbButton isKindOfClass:[NSNumber class]]) {
+            _gamepadToVBButtonMap[@(gpButton)] = vbButton;
+        }
+    }
+    
+    // If nothing was loaded, reset to defaults
+    if (_gamepadToVBButtonMap.count == 0) {
+        [self resetGamepadBindingsToDefaults];
+    }
+}
+
+- (void)saveGamepadBindings {
+    // Convert gamepadToVBButtonMap to dictionary with string keys (for UserDefaults)
+    NSMutableDictionary *toSave = [[NSMutableDictionary alloc] init];
+    for (NSNumber *gpButtonNum in _gamepadToVBButtonMap) {
+        NSString *buttonKey = [gpButtonNum stringValue];
+        toSave[buttonKey] = _gamepadToVBButtonMap[gpButtonNum];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setObject:toSave forKey:kRedViperGamepadBindingsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (VBButton)vbButtonForGamepadButton:(GamepadButton)gamepadButton {
+    NSNumber *vbButtonNum = _gamepadToVBButtonMap[@(gamepadButton)];
+    if (vbButtonNum) {
+        return (VBButton)[vbButtonNum integerValue];
+    }
+    return VBButtonCount;  // Unmapped
+}
+
+- (void)setVBButton:(VBButton)vbButton forGamepadButton:(GamepadButton)gamepadButton {
+    if (vbButton == VBButtonCount) {
+        // Unmap this gamepad button
+        [_gamepadToVBButtonMap removeObjectForKey:@(gamepadButton)];
+    } else {
+        _gamepadToVBButtonMap[@(gamepadButton)] = @(vbButton);
+    }
+}
+
++ (NSString *)displayNameForGamepadButton:(GamepadButton)gamepadButton {
+    switch (gamepadButton) {
+        case GamepadButtonA:               return @"A Button";
+        case GamepadButtonB:               return @"B Button";
+        case GamepadButtonX:               return @"X Button";
+        case GamepadButtonY:               return @"Y Button";
+        case GamepadButtonLeftShoulder:    return @"Left Shoulder";
+        case GamepadButtonRightShoulder:   return @"Right Shoulder";
+        case GamepadButtonLeftTrigger:     return @"Left Trigger";
+        case GamepadButtonRightTrigger:    return @"Right Trigger";
+        case GamepadButtonDpadUp:          return @"D-Pad Up";
+        case GamepadButtonDpadDown:        return @"D-Pad Down";
+        case GamepadButtonDpadLeft:        return @"D-Pad Left";
+        case GamepadButtonDpadRight:       return @"D-Pad Right";
+        case GamepadButtonLeftStickUp:     return @"Left Stick Up";
+        case GamepadButtonLeftStickDown:   return @"Left Stick Down";
+        case GamepadButtonLeftStickLeft:   return @"Left Stick Left";
+        case GamepadButtonLeftStickRight:  return @"Left Stick Right";
+        case GamepadButtonRightStickUp:    return @"Right Stick Up";
+        case GamepadButtonRightStickDown:  return @"Right Stick Down";
+        case GamepadButtonRightStickLeft:  return @"Right Stick Left";
+        case GamepadButtonRightStickRight: return @"Right Stick Right";
+        case GamepadButtonMenu:            return @"Menu";
+        case GamepadButtonOptions:         return @"Options";
+        default:                           return @"Unknown";
+    }
+}
+
 #pragma mark - Event Handling
 
 - (void)keyDown:(NSEvent *)event {
@@ -323,42 +450,54 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
         return 0;
     }
     
-    uint16_t result = 0;
+    __block uint16_t result = 0;
     
-    // Face buttons (per CONTEXT.md: VB A = right face button, VB B = bottom face button)
-    // GCController: buttonB is right (Xbox B / PS Circle), buttonA is bottom (Xbox A / PS X)
-    if (gp.buttonB.isPressed) result |= VB_KEY_A;   // VB A = Xbox B / PS Circle (right)
-    if (gp.buttonA.isPressed) result |= VB_KEY_B;   // VB B = Xbox A / PS X (bottom)
+    // Helper block to add VB button flag if gamepad button is mapped
+    void (^addIfMapped)(GamepadButton) = ^(GamepadButton gpButton) {
+        NSNumber *vbButtonNum = self->_gamepadToVBButtonMap[@(gpButton)];
+        if (vbButtonNum) {
+            VBButton vbButton = (VBButton)[vbButtonNum integerValue];
+            if (vbButton < VBButtonCount) {
+                result |= VBButtonFlags[vbButton];
+            }
+        }
+    };
     
-    // Shoulders and triggers -> VB L/R
-    if (gp.leftShoulder.isPressed || gp.leftTrigger.value > kAnalogTriggerThreshold) {
-        result |= VB_KEY_L;
-    }
-    if (gp.rightShoulder.isPressed || gp.rightTrigger.value > kAnalogTriggerThreshold) {
-        result |= VB_KEY_R;
-    }
+    // Face buttons
+    if (gp.buttonA.isPressed) addIfMapped(GamepadButtonA);
+    if (gp.buttonB.isPressed) addIfMapped(GamepadButtonB);
+    if (gp.buttonX.isPressed) addIfMapped(GamepadButtonX);
+    if (gp.buttonY.isPressed) addIfMapped(GamepadButtonY);
     
-    // Start/Select (use modern button names per RESEARCH.md)
-    if (gp.buttonMenu.isPressed) result |= VB_KEY_START;
-    if (gp.buttonOptions.isPressed) result |= VB_KEY_SELECT;
+    // Shoulders
+    if (gp.leftShoulder.isPressed)  addIfMapped(GamepadButtonLeftShoulder);
+    if (gp.rightShoulder.isPressed) addIfMapped(GamepadButtonRightShoulder);
     
-    // Left stick -> Left D-Pad
-    if (gp.leftThumbstick.yAxis.value > kAnalogStickThreshold)  result |= VB_LPAD_U;
-    if (gp.leftThumbstick.yAxis.value < -kAnalogStickThreshold) result |= VB_LPAD_D;
-    if (gp.leftThumbstick.xAxis.value < -kAnalogStickThreshold) result |= VB_LPAD_L;
-    if (gp.leftThumbstick.xAxis.value > kAnalogStickThreshold)  result |= VB_LPAD_R;
+    // Triggers (with analog threshold)
+    if (gp.leftTrigger.value > kAnalogTriggerThreshold)  addIfMapped(GamepadButtonLeftTrigger);
+    if (gp.rightTrigger.value > kAnalogTriggerThreshold) addIfMapped(GamepadButtonRightTrigger);
     
-    // Right stick -> Right D-Pad
-    if (gp.rightThumbstick.yAxis.value > kAnalogStickThreshold)  result |= VB_RPAD_U;
-    if (gp.rightThumbstick.yAxis.value < -kAnalogStickThreshold) result |= VB_RPAD_D;
-    if (gp.rightThumbstick.xAxis.value < -kAnalogStickThreshold) result |= VB_RPAD_L;
-    if (gp.rightThumbstick.xAxis.value > kAnalogStickThreshold)  result |= VB_RPAD_R;
+    // Menu buttons
+    if (gp.buttonMenu.isPressed)    addIfMapped(GamepadButtonMenu);
+    if (gp.buttonOptions.isPressed) addIfMapped(GamepadButtonOptions);
     
-    // Also check physical D-Pad (maps to left d-pad since it's on left side)
-    if (gp.dpad.up.isPressed)    result |= VB_LPAD_U;
-    if (gp.dpad.down.isPressed)  result |= VB_LPAD_D;
-    if (gp.dpad.left.isPressed)  result |= VB_LPAD_L;
-    if (gp.dpad.right.isPressed) result |= VB_LPAD_R;
+    // D-Pad
+    if (gp.dpad.up.isPressed)    addIfMapped(GamepadButtonDpadUp);
+    if (gp.dpad.down.isPressed)  addIfMapped(GamepadButtonDpadDown);
+    if (gp.dpad.left.isPressed)  addIfMapped(GamepadButtonDpadLeft);
+    if (gp.dpad.right.isPressed) addIfMapped(GamepadButtonDpadRight);
+    
+    // Left stick (with analog threshold)
+    if (gp.leftThumbstick.yAxis.value > kAnalogStickThreshold)  addIfMapped(GamepadButtonLeftStickUp);
+    if (gp.leftThumbstick.yAxis.value < -kAnalogStickThreshold) addIfMapped(GamepadButtonLeftStickDown);
+    if (gp.leftThumbstick.xAxis.value < -kAnalogStickThreshold) addIfMapped(GamepadButtonLeftStickLeft);
+    if (gp.leftThumbstick.xAxis.value > kAnalogStickThreshold)  addIfMapped(GamepadButtonLeftStickRight);
+    
+    // Right stick (with analog threshold)
+    if (gp.rightThumbstick.yAxis.value > kAnalogStickThreshold)  addIfMapped(GamepadButtonRightStickUp);
+    if (gp.rightThumbstick.yAxis.value < -kAnalogStickThreshold) addIfMapped(GamepadButtonRightStickDown);
+    if (gp.rightThumbstick.xAxis.value < -kAnalogStickThreshold) addIfMapped(GamepadButtonRightStickLeft);
+    if (gp.rightThumbstick.xAxis.value > kAnalogStickThreshold)  addIfMapped(GamepadButtonRightStickRight);
     
     return result;
 }
