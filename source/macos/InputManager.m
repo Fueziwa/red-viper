@@ -8,12 +8,33 @@
 #import "InputManager.h"
 #include "vb_dsp.h"
 
+/// UserDefaults key for storing key bindings
+static NSString * const kRedViperKeyBindingsKey = @"RedViperKeyBindings";
+
+/// Maps VBButton enum values to VB hardware button flags
+static const uint16_t VBButtonFlags[VBButtonCount] = {
+    VB_LPAD_U,      // VBButtonLPadUp
+    VB_LPAD_D,      // VBButtonLPadDown
+    VB_LPAD_L,      // VBButtonLPadLeft
+    VB_LPAD_R,      // VBButtonLPadRight
+    VB_RPAD_U,      // VBButtonRPadUp
+    VB_RPAD_D,      // VBButtonRPadDown
+    VB_RPAD_L,      // VBButtonRPadLeft
+    VB_RPAD_R,      // VBButtonRPadRight
+    VB_KEY_A,       // VBButtonA
+    VB_KEY_B,       // VBButtonB
+    VB_KEY_START,   // VBButtonStart
+    VB_KEY_SELECT,  // VBButtonSelect
+    VB_KEY_L,       // VBButtonL
+    VB_KEY_R,       // VBButtonR
+};
+
 @implementation InputManager {
-    /// Maps keyCode (NSNumber) -> VB button flag (NSNumber)
-    NSDictionary<NSNumber *, NSNumber *> *_keyToButtonMap;
+    /// Maps VBButton (NSNumber) -> keyCode (NSNumber)
+    NSMutableDictionary<NSNumber *, NSNumber *> *_buttonToKeyMap;
     
-    /// Maps keyCode for modifier keys -> VB button flag
-    NSDictionary<NSNumber *, NSNumber *> *_modifierButtonMap;
+    /// Maps keyCode (NSNumber) -> VB button flag (NSNumber) - rebuilt from buttonToKeyMap
+    NSMutableDictionary<NSNumber *, NSNumber *> *_keyToButtonMap;
     
     /// Currently pressed key codes
     NSMutableSet<NSNumber *> *_pressedKeys;
@@ -34,53 +55,131 @@
     self = [super init];
     if (self) {
         _pressedKeys = [[NSMutableSet alloc] init];
-        [self setupDefaultKeyMapping];
+        _buttonToKeyMap = [[NSMutableDictionary alloc] init];
+        _keyToButtonMap = [[NSMutableDictionary alloc] init];
+        [self loadBindings];
     }
     return self;
 }
 
 #pragma mark - Key Mapping Setup
 
-- (void)setupDefaultKeyMapping {
+- (void)resetToDefaults {
     // Default key mapping from CONTEXT.md:
     // Left D-pad: WASD
     // A button: K
     // B button: J
     // Right D-pad: P=up, ;=down, L=left, '=right
     // Start: Return
-    // Select: Shift (handled via flagsChanged)
+    // Select: Shift
     // L trigger: 1
     // R trigger: 2
     
-    _keyToButtonMap = @{
-        // Left D-pad: WASD
-        @(kVK_ANSI_W): @(VB_LPAD_U),  // W -> Left Up
-        @(kVK_ANSI_S): @(VB_LPAD_D),  // S -> Left Down
-        @(kVK_ANSI_A): @(VB_LPAD_L),  // A -> Left Left
-        @(kVK_ANSI_D): @(VB_LPAD_R),  // D -> Left Right
-        
-        // A/B buttons
-        @(kVK_ANSI_K): @(VB_KEY_A),   // K -> A
-        @(kVK_ANSI_J): @(VB_KEY_B),   // J -> B
-        
-        // Right D-pad: P, ;, L, '
-        @(kVK_ANSI_P):         @(VB_RPAD_U),  // P -> Right Up
-        @(kVK_ANSI_Semicolon): @(VB_RPAD_D),  // ; -> Right Down
-        @(kVK_ANSI_L):         @(VB_RPAD_L),  // L -> Right Left
-        @(kVK_ANSI_Quote):     @(VB_RPAD_R),  // ' -> Right Right
-        
-        // Start
-        @(kVK_Return): @(VB_KEY_START),  // Return -> Start
-        
-        // Triggers
-        @(kVK_ANSI_1): @(VB_KEY_L),  // 1 -> L Trigger
-        @(kVK_ANSI_2): @(VB_KEY_R),  // 2 -> R Trigger
-    };
+    [_buttonToKeyMap removeAllObjects];
     
-    // Modifier keys handled separately via flagsChanged
-    _modifierButtonMap = @{
-        @(kVK_Shift): @(VB_KEY_SELECT),  // Shift -> Select
-    };
+    _buttonToKeyMap[@(VBButtonLPadUp)]    = @(kVK_ANSI_W);
+    _buttonToKeyMap[@(VBButtonLPadDown)]  = @(kVK_ANSI_S);
+    _buttonToKeyMap[@(VBButtonLPadLeft)]  = @(kVK_ANSI_A);
+    _buttonToKeyMap[@(VBButtonLPadRight)] = @(kVK_ANSI_D);
+    
+    _buttonToKeyMap[@(VBButtonRPadUp)]    = @(kVK_ANSI_P);
+    _buttonToKeyMap[@(VBButtonRPadDown)]  = @(kVK_ANSI_Semicolon);
+    _buttonToKeyMap[@(VBButtonRPadLeft)]  = @(kVK_ANSI_L);
+    _buttonToKeyMap[@(VBButtonRPadRight)] = @(kVK_ANSI_Quote);
+    
+    _buttonToKeyMap[@(VBButtonA)]         = @(kVK_ANSI_K);
+    _buttonToKeyMap[@(VBButtonB)]         = @(kVK_ANSI_J);
+    
+    _buttonToKeyMap[@(VBButtonStart)]     = @(kVK_Return);
+    _buttonToKeyMap[@(VBButtonSelect)]    = @(kVK_Shift);
+    
+    _buttonToKeyMap[@(VBButtonL)]         = @(kVK_ANSI_1);
+    _buttonToKeyMap[@(VBButtonR)]         = @(kVK_ANSI_2);
+    
+    [self rebuildKeyToButtonMap];
+}
+
+- (void)loadBindings {
+    NSDictionary *saved = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kRedViperKeyBindingsKey];
+    
+    if (!saved || saved.count == 0) {
+        [self resetToDefaults];
+        return;
+    }
+    
+    // Convert saved dictionary (string keys) to buttonToKeyMap (NSNumber keys)
+    [_buttonToKeyMap removeAllObjects];
+    for (NSString *buttonKey in saved) {
+        NSNumber *keyCode = saved[buttonKey];
+        VBButton button = (VBButton)[buttonKey integerValue];
+        if (button >= 0 && button < VBButtonCount && [keyCode isKindOfClass:[NSNumber class]]) {
+            _buttonToKeyMap[@(button)] = keyCode;
+        }
+    }
+    
+    // Fill in any missing buttons with defaults
+    if (_buttonToKeyMap.count < VBButtonCount) {
+        // Temporarily store current bindings
+        NSDictionary *currentBindings = [_buttonToKeyMap copy];
+        [self resetToDefaults];
+        // Overlay saved bindings
+        [_buttonToKeyMap addEntriesFromDictionary:currentBindings];
+    }
+    
+    [self rebuildKeyToButtonMap];
+}
+
+- (void)saveBindings {
+    // Convert buttonToKeyMap to dictionary with string keys (for UserDefaults)
+    NSMutableDictionary *toSave = [[NSMutableDictionary alloc] init];
+    for (NSNumber *buttonNum in _buttonToKeyMap) {
+        NSString *buttonKey = [buttonNum stringValue];
+        toSave[buttonKey] = _buttonToKeyMap[buttonNum];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setObject:toSave forKey:kRedViperKeyBindingsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)rebuildKeyToButtonMap {
+    [_keyToButtonMap removeAllObjects];
+    
+    for (NSNumber *buttonNum in _buttonToKeyMap) {
+        VBButton button = (VBButton)[buttonNum integerValue];
+        NSNumber *keyCode = _buttonToKeyMap[buttonNum];
+        uint16_t flag = VBButtonFlags[button];
+        _keyToButtonMap[keyCode] = @(flag);
+    }
+}
+
+- (unsigned short)keyCodeForButton:(VBButton)button {
+    NSNumber *keyCode = _buttonToKeyMap[@(button)];
+    return keyCode ? [keyCode unsignedShortValue] : 0;
+}
+
+- (void)setKeyCode:(unsigned short)keyCode forButton:(VBButton)button {
+    _buttonToKeyMap[@(button)] = @(keyCode);
+    [self rebuildKeyToButtonMap];
+}
+
++ (NSString *)displayNameForButton:(VBButton)button {
+    switch (button) {
+        case VBButtonLPadUp:    return @"Left D-Pad Up";
+        case VBButtonLPadDown:  return @"Left D-Pad Down";
+        case VBButtonLPadLeft:  return @"Left D-Pad Left";
+        case VBButtonLPadRight: return @"Left D-Pad Right";
+        case VBButtonRPadUp:    return @"Right D-Pad Up";
+        case VBButtonRPadDown:  return @"Right D-Pad Down";
+        case VBButtonRPadLeft:  return @"Right D-Pad Left";
+        case VBButtonRPadRight: return @"Right D-Pad Right";
+        case VBButtonA:         return @"A Button";
+        case VBButtonB:         return @"B Button";
+        case VBButtonStart:     return @"Start";
+        case VBButtonSelect:    return @"Select";
+        case VBButtonL:         return @"L Trigger";
+        case VBButtonR:         return @"R Trigger";
+        default:                return @"Unknown";
+    }
 }
 
 #pragma mark - Event Handling
@@ -121,16 +220,10 @@
     
     // Check each pressed key and OR in the corresponding button flag
     for (NSNumber *keyCode in _pressedKeys) {
-        // Check regular keys
+        // Check if this key code is mapped to a button
         NSNumber *buttonFlag = _keyToButtonMap[keyCode];
         if (buttonFlag) {
             result |= [buttonFlag unsignedShortValue];
-        }
-        
-        // Check modifier keys
-        NSNumber *modifierFlag = _modifierButtonMap[keyCode];
-        if (modifierFlag) {
-            result |= [modifierFlag unsignedShortValue];
         }
     }
     

@@ -10,6 +10,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/// VB button identifiers (for UI configuration)
+typedef NS_ENUM(NSInteger, VBButton) {
+    VBButtonLPadUp,
+    VBButtonLPadDown,
+    VBButtonLPadLeft,
+    VBButtonLPadRight,
+    VBButtonRPadUp,
+    VBButtonRPadDown,
+    VBButtonRPadLeft,
+    VBButtonRPadRight,
+    VBButtonA,
+    VBButtonB,
+    VBButtonStart,
+    VBButtonSelect,
+    VBButtonL,
+    VBButtonR,
+    VBButtonCount  // 14 total
+};
+
 @interface InputManager : NSObject
 
 /// Shared singleton instance
@@ -30,6 +49,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Clear all pressed keys (call on window focus loss)
 - (void)clearAllKeys;
+
+#pragma mark - Key Binding Customization
+
+/// Get current key code for a button
+- (unsigned short)keyCodeForButton:(VBButton)button;
+
+/// Set key code for a button (does not save - call saveBindings after)
+- (void)setKeyCode:(unsigned short)keyCode forButton:(VBButton)button;
+
+/// Save bindings to UserDefaults
+- (void)saveBindings;
+
+/// Load bindings from UserDefaults (called on init)
+- (void)loadBindings;
+
+/// Reset to default bindings (does not save - call saveBindings after)
+- (void)resetToDefaults;
+
+/// Get display name for a button (e.g., "Left D-Pad Up", "A Button")
++ (NSString *)displayNameForButton:(VBButton)button;
 
 @end
 
