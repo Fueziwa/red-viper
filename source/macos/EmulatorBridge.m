@@ -20,6 +20,9 @@
 extern void video_soft_render(int drawn_fb);
 extern void update_texture_cache_soft(void);
 
+// Cache management from video_common.c
+extern void clearCache(void);
+
 // External declarations from C core
 extern VB_OPT tVBOpt;
 
@@ -183,6 +186,9 @@ extern VB_OPT tVBOpt;
     
     _romLoaded = YES;
     _currentROMPath = romPath;
+    
+    // Initialize display cache - required for software renderer to work
+    clearCache();
     
     return YES;
 }
