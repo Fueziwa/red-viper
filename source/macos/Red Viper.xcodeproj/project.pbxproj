@@ -14,6 +14,7 @@
 		A0000001204 /* EmulatorBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001008 /* EmulatorBridge.m */; };
 		A0000001205 /* ROMLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001010 /* ROMLoader.m */; };
 		A0000001206 /* EmulatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001012 /* EmulatorView.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
+		A0000001207 /* InputManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001014 /* InputManager.m */; };
 
 		/* C core files */
 		A0000002201 /* v810_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002001 /* v810_cpu.c */; };
@@ -61,6 +62,8 @@
 		A0000001011 /* ROMLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ROMLoader.h; sourceTree = "<group>"; };
 		A0000001012 /* EmulatorView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulatorView.m; sourceTree = "<group>"; };
 		A0000001013 /* EmulatorView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
+		A0000001014 /* InputManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InputManager.m; sourceTree = "<group>"; };
+		A0000001015 /* InputManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputManager.h; sourceTree = "<group>"; };
 
 		/* C core files */
 		A0000002001 /* v810_cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_cpu.c; path = ../../source/common/v810_cpu.c; sourceTree = "<group>"; };
@@ -132,6 +135,8 @@
 				A0000001010 /* ROMLoader.m */,
 				A0000001013 /* EmulatorView.h */,
 				A0000001012 /* EmulatorView.m */,
+				A0000001015 /* InputManager.h */,
+				A0000001014 /* InputManager.m */,
 				A0000001006 /* Info.plist */,
 				A0000001007 /* Red Viper.entitlements */,
 			);
@@ -270,6 +275,7 @@
 				A0000001204 /* EmulatorBridge.m in Sources */,
 				A0000001205 /* ROMLoader.m in Sources */,
 				A0000001206 /* EmulatorView.m in Sources */,
+				A0000001207 /* InputManager.m in Sources */,
 				A0000002201 /* v810_cpu.c in Sources */,
 				A0000002202 /* interpreter.c in Sources */,
 				A0000002203 /* v810_mem.c in Sources */,
