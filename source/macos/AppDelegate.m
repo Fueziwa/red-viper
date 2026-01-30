@@ -112,19 +112,10 @@
     
     NSMenuItem *scaleUpItem = [[NSMenuItem alloc] initWithTitle:@"Increase Scale"
                                                          action:@selector(scaleUp:)
-                                                  keyEquivalent:@"+"];
+                                                  keyEquivalent:@"="];
     [scaleUpItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
     [scaleUpItem setTarget:self];
     [viewMenu addItem:scaleUpItem];
-    
-    // Also accept Cmd= as alternative for Cmd+ (unshifted + key)
-    NSMenuItem *scaleUpAltItem = [[NSMenuItem alloc] initWithTitle:@"Increase Scale"
-                                                            action:@selector(scaleUp:)
-                                                     keyEquivalent:@"="];
-    [scaleUpAltItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
-    [scaleUpAltItem setTarget:self];
-    [scaleUpAltItem setAlternate:YES];
-    [viewMenu addItem:scaleUpAltItem];
     
     NSMenuItem *scaleDownItem = [[NSMenuItem alloc] initWithTitle:@"Decrease Scale"
                                                            action:@selector(scaleDown:)
