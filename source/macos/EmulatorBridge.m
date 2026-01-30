@@ -7,6 +7,7 @@
 
 #import "EmulatorBridge.h"
 #import "ROMLoader.h"
+#import "InputManager.h"
 
 // C core headers
 #include "v810_cpu.h"
@@ -233,6 +234,12 @@ extern VB_OPT tVBOpt;
     if (self.frameCallback) {
         self.frameCallback();
     }
+    
+    // Write input state to hardware registers before CPU execution
+    // Games read input from 0x02000010 (SLB) and 0x02000014 (SHB)
+    uint16_t inputs = InputManager_currentControllerState();
+    vb_state->tHReg.SLB = inputs & 0xFF;
+    vb_state->tHReg.SHB = (inputs >> 8) & 0xFF;
     
     // Run one frame of emulation
     v810_run();
