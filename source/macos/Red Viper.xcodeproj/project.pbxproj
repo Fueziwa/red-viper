@@ -13,6 +13,7 @@
 		A0000001203 /* MainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001003 /* MainWindow.m */; };
 		A0000001204 /* EmulatorBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001008 /* EmulatorBridge.m */; };
 		A0000001205 /* ROMLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001010 /* ROMLoader.m */; };
+		A0000001206 /* EmulatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000001012 /* EmulatorView.m */; settings = {COMPILER_FLAGS = "-Wno-deprecated-declarations"; }; };
 
 		/* C core files */
 		A0000002201 /* v810_cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000002001 /* v810_cpu.c */; };
@@ -38,6 +39,7 @@
 		A0000004202 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004002 /* Foundation.framework */; };
 		A0000004203 /* libarchive.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004003 /* libarchive.dylib */; };
 		A0000004204 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004004 /* libz.tbd */; };
+		A0000004205 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004005 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +58,8 @@
 		A0000001009 /* EmulatorBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulatorBridge.h; sourceTree = "<group>"; };
 		A0000001010 /* ROMLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ROMLoader.m; sourceTree = "<group>"; };
 		A0000001011 /* ROMLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ROMLoader.h; sourceTree = "<group>"; };
+		A0000001012 /* EmulatorView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EmulatorView.m; sourceTree = "<group>"; };
+		A0000001013 /* EmulatorView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
 
 		/* C core files */
 		A0000002001 /* v810_cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = v810_cpu.c; path = ../../source/common/v810_cpu.c; sourceTree = "<group>"; };
@@ -82,6 +86,7 @@
 		A0000004002 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A0000004003 /* libarchive.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libarchive.dylib; path = /opt/homebrew/opt/libarchive/lib/libarchive.dylib; sourceTree = "<absolute>"; };
 		A0000004004 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		A0000004005 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +98,7 @@
 				A0000004202 /* Foundation.framework in Frameworks */,
 				A0000004203 /* libarchive.dylib in Frameworks */,
 				A0000004204 /* libz.tbd in Frameworks */,
+				A0000004205 /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -122,6 +128,8 @@
 				A0000001008 /* EmulatorBridge.m */,
 				A0000001011 /* ROMLoader.h */,
 				A0000001010 /* ROMLoader.m */,
+				A0000001013 /* EmulatorView.h */,
+				A0000001012 /* EmulatorView.m */,
 				A0000001006 /* Info.plist */,
 				A0000001007 /* Red Viper.entitlements */,
 			);
@@ -165,6 +173,7 @@
 				A0000004002 /* Foundation.framework */,
 				A0000004003 /* libarchive.dylib */,
 				A0000004004 /* libz.tbd */,
+				A0000004005 /* OpenGL.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -257,6 +266,7 @@
 				A0000001203 /* MainWindow.m in Sources */,
 				A0000001204 /* EmulatorBridge.m in Sources */,
 				A0000001205 /* ROMLoader.m in Sources */,
+				A0000001206 /* EmulatorView.m in Sources */,
 				A0000002201 /* v810_cpu.c in Sources */,
 				A0000002202 /* interpreter.c in Sources */,
 				A0000002203 /* v810_mem.c in Sources */,
