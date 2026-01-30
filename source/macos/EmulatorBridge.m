@@ -16,6 +16,10 @@
 #include "vb_sound.h"
 #include "replay.h"
 
+// Software renderer from video_soft.cpp
+extern void video_soft_render(int drawn_fb);
+extern void update_texture_cache_soft(void);
+
 // External declarations from C core
 extern VB_OPT tVBOpt;
 
@@ -190,13 +194,31 @@ extern VB_OPT tVBOpt;
 - (void)runFrame {
     if (!_romLoaded) return;
     
+    // Check if we should render (same conditions as linux-test/main.c)
+    // Must check BEFORE v810_run() modifies state
+    BOOL shouldRender = (vb_state->tVIPREG.tFrame == 0 &&
+                         !vb_state->tVIPREG.drawing &&
+                         (vb_state->tVIPREG.XPCTRL & XPEN));
+    
+    if (shouldRender) {
+        // Update tile cache if needed
+        if (tDSPCACHE.CharCacheInvalid) {
+            update_texture_cache_soft();
+        }
+        
+        // Render to the non-displayed framebuffer
+        video_soft_render(!vb_state->tVIPREG.tDisplayedFB);
+        
+        // Clear cache flags after rendering
+        tDSPCACHE.CharCacheInvalid = false;
+        memset(tDSPCACHE.CharacterCache, 0, sizeof(tDSPCACHE.CharacterCache));
+    }
+    
     // Run one frame of emulation
     v810_run();
     
-    // Check if a new frame was rendered
-    // The C core sets newframe when a display frame completes
+    // Check if a new frame was rendered (display swap happened)
     if (vb_state->tVIPREG.newframe) {
-        // Clear the flag
         vb_state->tVIPREG.newframe = false;
         
         // Invoke the frame callback if set
