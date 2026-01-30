@@ -104,6 +104,37 @@
     [editMenu addItemWithTitle:@"Select All" action:@selector(selectAll:) keyEquivalent:@"a"];
     [editMenuItem setSubmenu:editMenu];
     
+    // View menu (scale controls)
+    NSMenuItem *viewMenuItem = [[NSMenuItem alloc] init];
+    [mainMenu addItem:viewMenuItem];
+    
+    NSMenu *viewMenu = [[NSMenu alloc] initWithTitle:@"View"];
+    
+    NSMenuItem *scaleUpItem = [[NSMenuItem alloc] initWithTitle:@"Increase Scale"
+                                                         action:@selector(scaleUp:)
+                                                  keyEquivalent:@"+"];
+    [scaleUpItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
+    [scaleUpItem setTarget:self];
+    [viewMenu addItem:scaleUpItem];
+    
+    // Also accept Cmd= as alternative for Cmd+ (unshifted + key)
+    NSMenuItem *scaleUpAltItem = [[NSMenuItem alloc] initWithTitle:@"Increase Scale"
+                                                            action:@selector(scaleUp:)
+                                                     keyEquivalent:@"="];
+    [scaleUpAltItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
+    [scaleUpAltItem setTarget:self];
+    [scaleUpAltItem setAlternate:YES];
+    [viewMenu addItem:scaleUpAltItem];
+    
+    NSMenuItem *scaleDownItem = [[NSMenuItem alloc] initWithTitle:@"Decrease Scale"
+                                                           action:@selector(scaleDown:)
+                                                    keyEquivalent:@"-"];
+    [scaleDownItem setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
+    [scaleDownItem setTarget:self];
+    [viewMenu addItem:scaleDownItem];
+    
+    [viewMenuItem setSubmenu:viewMenu];
+    
     // Window menu
     NSMenuItem *windowMenuItem = [[NSMenuItem alloc] init];
     [mainMenu addItem:windowMenuItem];
@@ -127,6 +158,28 @@
     [NSApp setMainMenu:mainMenu];
     [NSApp setWindowsMenu:windowMenu];
     [NSApp setHelpMenu:helpMenu];
+}
+
+#pragma mark - Scale Controls
+
+- (IBAction)scaleUp:(id)sender {
+    NSInteger current = [self.emulatorView currentScale];
+    if (current < 4) {
+        [self.emulatorView setScale:current + 1];
+        // Resize window to match new content size
+        [[self.window contentView] setNeedsLayout:YES];
+        [self.window setContentSize:[self.emulatorView frame].size];
+    }
+}
+
+- (IBAction)scaleDown:(id)sender {
+    NSInteger current = [self.emulatorView currentScale];
+    if (current > 1) {
+        [self.emulatorView setScale:current - 1];
+        // Resize window to match new content size
+        [[self.window contentView] setNeedsLayout:YES];
+        [self.window setContentSize:[self.emulatorView frame].size];
+    }
 }
 
 #pragma mark - ROM Loading
