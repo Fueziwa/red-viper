@@ -2,7 +2,7 @@
 //  InputManager.m
 //  Red Viper - Virtual Boy Emulator for macOS
 //
-//  Singleton class for keyboard input handling with Virtual Boy button mapping
+//  Singleton class for keyboard and gamepad input handling with Virtual Boy button mapping
 //
 
 #import "InputManager.h"
@@ -10,6 +10,12 @@
 
 /// UserDefaults key for storing key bindings
 static NSString * const kRedViperKeyBindingsKey = @"RedViperKeyBindings";
+
+/// Analog stick threshold for d-pad activation (0.5 = halfway deflection)
+static const float kAnalogStickThreshold = 0.5f;
+
+/// Analog trigger threshold for button activation (lower than stick since triggers have more travel)
+static const float kAnalogTriggerThreshold = 0.25f;
 
 /// Maps VBButton enum values to VB hardware button flags
 static const uint16_t VBButtonFlags[VBButtonCount] = {
@@ -38,6 +44,9 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
     
     /// Currently pressed key codes
     NSMutableSet<NSNumber *> *_pressedKeys;
+    
+    /// Currently active game controller
+    GCController *_activeController;
 }
 
 #pragma mark - Singleton
@@ -57,9 +66,28 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
         _pressedKeys = [[NSMutableSet alloc] init];
         _buttonToKeyMap = [[NSMutableDictionary alloc] init];
         _keyToButtonMap = [[NSMutableDictionary alloc] init];
+        _activeController = nil;
+        
         [self loadBindings];
+        
+        // Register for controller connect/disconnect notifications
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(controllerDidConnect:)
+                                                     name:GCControllerDidConnectNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(controllerDidDisconnect:)
+                                                     name:GCControllerDidDisconnectNotification
+                                                   object:nil];
+        
+        // Check for already-connected controllers
+        [self checkForExistingControllers];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Key Mapping Setup
@@ -232,6 +260,102 @@ static const uint16_t VBButtonFlags[VBButtonCount] = {
 
 - (void)clearAllKeys {
     [_pressedKeys removeAllObjects];
+}
+
+#pragma mark - Gamepad Support
+
+- (GCController *)activeController {
+    return _activeController;
+}
+
+- (void)checkForExistingControllers {
+    for (GCController *controller in [GCController controllers]) {
+        if (controller.extendedGamepad) {
+            _activeController = controller;
+            _activeController.playerIndex = GCControllerPlayerIndex1;
+            NSLog(@"InputManager: Found existing controller: %@", controller.vendorName);
+            break;
+        }
+    }
+}
+
+- (void)controllerDidConnect:(NSNotification *)notification {
+    GCController *controller = notification.object;
+    
+    // Only use controllers with extended gamepad profile
+    if (!controller.extendedGamepad) {
+        NSLog(@"InputManager: Ignoring controller without extended gamepad: %@", controller.vendorName);
+        return;
+    }
+    
+    // First controller wins (per CONTEXT.md decision)
+    if (_activeController == nil) {
+        _activeController = controller;
+        _activeController.playerIndex = GCControllerPlayerIndex1;
+        NSLog(@"InputManager: Controller connected: %@", controller.vendorName);
+    }
+}
+
+- (void)controllerDidDisconnect:(NSNotification *)notification {
+    GCController *controller = notification.object;
+    
+    if (controller == _activeController) {
+        NSLog(@"InputManager: Controller disconnected: %@", controller.vendorName);
+        _activeController = nil;
+        
+        // Try to find another connected controller
+        [self checkForExistingControllers];
+    }
+}
+
+- (BOOL)isGamepadActive {
+    return _activeController != nil && _activeController.extendedGamepad != nil;
+}
+
+- (uint16_t)pollGamepadState {
+    GCExtendedGamepad *gp = _activeController.extendedGamepad;
+    if (!gp) {
+        return 0;
+    }
+    
+    uint16_t result = 0;
+    
+    // Face buttons (per CONTEXT.md: VB A = right face button, VB B = bottom face button)
+    // GCController: buttonB is right (Xbox B / PS Circle), buttonA is bottom (Xbox A / PS X)
+    if (gp.buttonB.isPressed) result |= VB_KEY_A;   // VB A = Xbox B / PS Circle (right)
+    if (gp.buttonA.isPressed) result |= VB_KEY_B;   // VB B = Xbox A / PS X (bottom)
+    
+    // Shoulders and triggers -> VB L/R
+    if (gp.leftShoulder.isPressed || gp.leftTrigger.value > kAnalogTriggerThreshold) {
+        result |= VB_KEY_L;
+    }
+    if (gp.rightShoulder.isPressed || gp.rightTrigger.value > kAnalogTriggerThreshold) {
+        result |= VB_KEY_R;
+    }
+    
+    // Start/Select (use modern button names per RESEARCH.md)
+    if (gp.buttonMenu.isPressed) result |= VB_KEY_START;
+    if (gp.buttonOptions.isPressed) result |= VB_KEY_SELECT;
+    
+    // Left stick -> Left D-Pad
+    if (gp.leftThumbstick.yAxis.value > kAnalogStickThreshold)  result |= VB_LPAD_U;
+    if (gp.leftThumbstick.yAxis.value < -kAnalogStickThreshold) result |= VB_LPAD_D;
+    if (gp.leftThumbstick.xAxis.value < -kAnalogStickThreshold) result |= VB_LPAD_L;
+    if (gp.leftThumbstick.xAxis.value > kAnalogStickThreshold)  result |= VB_LPAD_R;
+    
+    // Right stick -> Right D-Pad
+    if (gp.rightThumbstick.yAxis.value > kAnalogStickThreshold)  result |= VB_RPAD_U;
+    if (gp.rightThumbstick.yAxis.value < -kAnalogStickThreshold) result |= VB_RPAD_D;
+    if (gp.rightThumbstick.xAxis.value < -kAnalogStickThreshold) result |= VB_RPAD_L;
+    if (gp.rightThumbstick.xAxis.value > kAnalogStickThreshold)  result |= VB_RPAD_R;
+    
+    // Also check physical D-Pad (maps to left d-pad since it's on left side)
+    if (gp.dpad.up.isPressed)    result |= VB_LPAD_U;
+    if (gp.dpad.down.isPressed)  result |= VB_LPAD_D;
+    if (gp.dpad.left.isPressed)  result |= VB_LPAD_L;
+    if (gp.dpad.right.isPressed) result |= VB_LPAD_R;
+    
+    return result;
 }
 
 @end

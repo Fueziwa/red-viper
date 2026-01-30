@@ -2,11 +2,12 @@
 //  InputManager.h
 //  Red Viper - Virtual Boy Emulator for macOS
 //
-//  Singleton class for keyboard input handling with Virtual Boy button mapping
+//  Singleton class for keyboard and gamepad input handling with Virtual Boy button mapping
 //
 
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
+#import <GameController/GameController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,6 +35,9 @@ typedef NS_ENUM(NSInteger, VBButton) {
 /// Shared singleton instance
 + (instancetype)sharedManager;
 
+/// Currently active game controller (nil if no gamepad connected)
+@property (nonatomic, readonly, nullable) GCController *activeController;
+
 /// Handle key press - call from EmulatorView keyDown:
 - (void)keyDown:(NSEvent *)event;
 
@@ -49,6 +53,14 @@ typedef NS_ENUM(NSInteger, VBButton) {
 
 /// Clear all pressed keys (call on window focus loss)
 - (void)clearAllKeys;
+
+#pragma mark - Gamepad Support
+
+/// Poll gamepad state and return VB button flags
+- (uint16_t)pollGamepadState;
+
+/// Returns YES if a gamepad is connected and active
+- (BOOL)isGamepadActive;
 
 #pragma mark - Key Binding Customization
 
