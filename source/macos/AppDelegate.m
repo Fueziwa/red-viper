@@ -9,6 +9,7 @@
 #import "EmulatorBridge.h"
 #import "ROMLoader.h"
 #import "ControlsConfigController.h"
+#import "InputConfigWindow.h"
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @implementation AppDelegate {
@@ -114,8 +115,8 @@
     NSMenu *emulationMenu = [[NSMenu alloc] initWithTitle:@"Emulation"];
     
     NSMenuItem *configControlsItem = [[NSMenuItem alloc] 
-        initWithTitle:@"Configure Controls..."
-               action:@selector(configureControls:)
+        initWithTitle:@"Input Configuration..."
+               action:@selector(openInputConfiguration:)
         keyEquivalent:@""];
     [configControlsItem setTarget:self];
     [emulationMenu addItem:configControlsItem];
@@ -198,6 +199,10 @@
         _controlsConfigController = [[ControlsConfigController alloc] init];
     }
     [_controlsConfigController showModalForWindow:self.window];
+}
+
+- (IBAction)openInputConfiguration:(id)sender {
+    [InputConfigWindow showWindow];
 }
 
 #pragma mark - ROM Loading
