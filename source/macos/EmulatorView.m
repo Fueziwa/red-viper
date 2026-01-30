@@ -12,6 +12,7 @@
 #import <OpenGL/gl.h>
 #import <CoreVideo/CoreVideo.h>
 #import "EmulatorBridge.h"
+#import "InputManager.h"
 
 // C core headers for framebuffer access
 #include "v810_mem.h"
@@ -116,11 +117,20 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
             NSLog(@"EmulatorView: Failed to allocate pixel buffer");
             return nil;
         }
+        
+        // Register for window focus loss to clear stuck keys
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(windowDidResignKey:)
+                                                     name:NSWindowDidResignKeyNotification
+                                                   object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
+    // Remove notification observer
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     // Stop the display link if running
     [self stopEmulation];
     
@@ -392,6 +402,26 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
 
 - (BOOL)isOpaque {
     return YES;
+}
+
+#pragma mark - Keyboard Events
+
+- (void)keyDown:(NSEvent *)event {
+    [[InputManager sharedManager] keyDown:event];
+}
+
+- (void)keyUp:(NSEvent *)event {
+    [[InputManager sharedManager] keyUp:event];
+}
+
+- (void)flagsChanged:(NSEvent *)event {
+    [[InputManager sharedManager] flagsChanged:event];
+}
+
+#pragma mark - Window Focus
+
+- (void)windowDidResignKey:(NSNotification *)notification {
+    [[InputManager sharedManager] clearAllKeys];
 }
 
 @end
