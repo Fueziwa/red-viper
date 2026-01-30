@@ -10,6 +10,8 @@
 
 #import "EmulatorView.h"
 #import <OpenGL/gl.h>
+#import <CoreVideo/CoreVideo.h>
+#import "EmulatorBridge.h"
 
 // C core headers for framebuffer access
 #include "v810_mem.h"
@@ -28,10 +30,36 @@ static const uint8_t kRedPalette[4][4] = {
     {255, 0, 0, 255},  // Shade 3: Bright red
 };
 
+// Forward declaration for private methods
+@interface EmulatorView ()
+- (void)renderFrame;
+- (void)startDisplayLink;
+- (void)stopDisplayLink;
+@end
+
+#pragma mark - CVDisplayLink Callback
+
+// CVDisplayLink callback runs on a high-priority background thread
+// Must dispatch to main thread for UI/OpenGL work
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
+                                    const CVTimeStamp *now,
+                                    const CVTimeStamp *outputTime,
+                                    CVOptionFlags flagsIn,
+                                    CVOptionFlags *flagsOut,
+                                    void *displayLinkContext) {
+    @autoreleasepool {
+        EmulatorView *view = (__bridge EmulatorView *)displayLinkContext;
+        [view renderFrame];
+    }
+    return kCVReturnSuccess;
+}
+
 @implementation EmulatorView {
     GLuint _displayTexture;
     uint8_t *_pixelBuffer;  // RGBA pixel buffer (384 * 224 * 4 bytes)
     NSInteger _currentScale;
+    CVDisplayLinkRef _displayLink;
+    BOOL _running;
 }
 
 #pragma mark - Initialization
@@ -56,6 +84,8 @@ static const uint8_t kRedPalette[4][4] = {
     if (self) {
         _currentScale = 2;  // Default to 2x scale (768x448)
         _displayTexture = 0;
+        _displayLink = NULL;
+        _running = NO;
         
         // Allocate RGBA pixel buffer
         _pixelBuffer = calloc(kVBDisplayWidth * kVBDisplayHeight * 4, sizeof(uint8_t));
@@ -68,6 +98,9 @@ static const uint8_t kRedPalette[4][4] = {
 }
 
 - (void)dealloc {
+    // Stop the display link if running
+    [self stopEmulation];
+    
     if (_pixelBuffer) {
         free(_pixelBuffer);
         _pixelBuffer = NULL;
@@ -188,6 +221,83 @@ static const uint8_t kRedPalette[4][4] = {
 
 - (NSInteger)currentScale {
     return _currentScale;
+}
+
+#pragma mark - CVDisplayLink Render Loop
+
+- (void)startEmulation {
+    [self startDisplayLink];
+}
+
+- (void)stopEmulation {
+    [self stopDisplayLink];
+}
+
+- (void)startDisplayLink {
+    if (_running) {
+        return;  // Already running
+    }
+    
+    // Create display link
+    CVReturn result = CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
+    if (result != kCVReturnSuccess) {
+        NSLog(@"EmulatorView: Failed to create CVDisplayLink (error %d)", result);
+        return;
+    }
+    
+    // Set the output callback
+    CVDisplayLinkSetOutputCallback(_displayLink, displayLinkCallback, (__bridge void *)self);
+    
+    // Set up the frame callback on EmulatorBridge to update texture when frame ready
+    __weak EmulatorView *weakSelf = self;
+    [[EmulatorBridge sharedBridge] setFrameCallback:^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            EmulatorView *strongSelf = weakSelf;
+            if (strongSelf) {
+                [strongSelf updateTexture];
+                [strongSelf setNeedsDisplay:YES];
+            }
+        });
+    }];
+    
+    // Start the display link
+    CVDisplayLinkStart(_displayLink);
+    _running = YES;
+    
+    NSLog(@"EmulatorView: Emulation started (CVDisplayLink active)");
+}
+
+- (void)stopDisplayLink {
+    if (!_running) {
+        return;  // Already stopped
+    }
+    
+    // Stop and release display link
+    if (_displayLink) {
+        CVDisplayLinkStop(_displayLink);
+        CVDisplayLinkRelease(_displayLink);
+        _displayLink = NULL;
+    }
+    
+    // Clear frame callback
+    [[EmulatorBridge sharedBridge] setFrameCallback:nil];
+    
+    _running = NO;
+    
+    NSLog(@"EmulatorView: Emulation stopped");
+}
+
+- (void)renderFrame {
+    if (!_running) {
+        return;
+    }
+    
+    // Dispatch to main thread for UI and emulator work
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([[EmulatorBridge sharedBridge] isROMLoaded]) {
+            [[EmulatorBridge sharedBridge] runFrame];
+        }
+    });
 }
 
 #pragma mark - Drawing

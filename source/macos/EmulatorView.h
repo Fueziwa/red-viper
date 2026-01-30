@@ -27,6 +27,14 @@ extern const NSInteger kVBDisplayHeight;  // 224
 /// @param scale Scale factor (1 = native 384x224, 2 = 768x448, etc.)
 - (void)setScale:(NSInteger)scale;
 
+/// Start the emulation render loop (CVDisplayLink)
+/// Call this after a ROM is loaded
+- (void)startEmulation;
+
+/// Stop the emulation render loop
+/// Call this before shutdown or when switching ROMs
+- (void)stopEmulation;
+
 @end
 
 NS_ASSUME_NONNULL_END
