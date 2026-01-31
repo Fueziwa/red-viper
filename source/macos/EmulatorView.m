@@ -18,6 +18,10 @@
 #include "v810_mem.h"
 #include "vb_dsp.h"
 
+// Sound functions from vb_sound_macos.c
+extern void sound_pause(void);
+extern void sound_resume(void);
+
 /// Virtual Boy display resolution
 const NSInteger kVBDisplayWidth = 384;
 const NSInteger kVBDisplayHeight = 224;
@@ -307,6 +311,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     CVDisplayLinkStart(_displayLink);
     _running = YES;
     
+    // Resume audio when emulation starts
+    sound_resume();
+    
     NSLog(@"EmulatorView: Emulation started (CVDisplayLink active)");
 }
 
@@ -314,6 +321,9 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     if (!_running) {
         return;  // Already stopped
     }
+    
+    // Pause audio when emulation stops
+    sound_pause();
     
     // Stop and release display link
     if (_displayLink) {
