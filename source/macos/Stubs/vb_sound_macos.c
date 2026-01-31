@@ -44,6 +44,11 @@ static AudioQueueBufferRef audioBuffers[BUF_COUNT];
 static int16_t *bufferData[BUF_COUNT];
 static bool audioInitialized = false;
 
+// Buffer synchronization: tracks which buffers are ready for playback
+// false = buffer is free (consumer done or not yet filled)
+// true = buffer is filled and ready for consumer
+static volatile bool bufferReady[BUF_COUNT] = {0};
+
 // Macros for sound memory access (from 3DS version)
 #define SNDMEM(x) (vb_state->V810_SOUND_RAM.pmemory[(x) & 0xFFF])
 #define GET_FREQ(ch) ((SNDMEM(S1FQL + 0x40 * ch) | (SNDMEM(S1FQH + 0x40 * ch) << 8)) & 0x7ff)
@@ -248,8 +253,16 @@ void sound_update(uint32_t cycles) {
                     bufferData[fill_buf][i * 2 + 1] = right;
                 }
             }
-            // Move to next buffer
-            fill_buf = (fill_buf + 1) % BUF_COUNT;
+            // Mark buffer as ready for consumer
+            bufferReady[fill_buf] = true;
+            
+            // Move to next buffer only if it's free (consumer has consumed it)
+            uint8_t next_buf = (fill_buf + 1) % BUF_COUNT;
+            if (!bufferReady[next_buf]) {
+                fill_buf = next_buf;
+            }
+            // If next buffer not free, we'll overwrite current buffer on next call
+            // This drops audio rather than corrupting playback timing
             buf_pos = 0;
         }
     }
@@ -354,6 +367,7 @@ void sound_refresh(void) {
         if (bufferData[i]) {
             memset(bufferData[i], 0, SAMPLE_COUNT * 4);
         }
+        bufferReady[i] = false;
     }
     fill_buf = 0;
     play_buf = 0;
@@ -369,12 +383,17 @@ static void audioQueueCallback(void *userData, AudioQueueRef queue, AudioQueueBu
         // Fill with silence when paused
         memset(buffer->mAudioData, 0, SAMPLE_COUNT * 4);
     } else {
-        // Read from the next buffer in sequence (producer-consumer pattern)
-        if (bufferData[play_buf]) {
+        // Check if the next buffer in sequence is ready
+        if (bufferReady[play_buf] && bufferData[play_buf]) {
+            // Copy synthesized audio to the Audio Queue buffer
             memcpy(buffer->mAudioData, bufferData[play_buf], SAMPLE_COUNT * 4);
+            // Mark buffer as consumed (free for producer)
+            bufferReady[play_buf] = false;
             // Advance consumer index
             play_buf = (play_buf + 1) % BUF_COUNT;
         } else {
+            // Buffer not ready - play silence to maintain timing
+            // This is an underrun condition
             memset(buffer->mAudioData, 0, SAMPLE_COUNT * 4);
         }
     }
@@ -389,6 +408,9 @@ void sound_init(void) {
     fill_buf = 0;
     play_buf = 0;
     buf_pos = 0;
+    for (int i = 0; i < BUF_COUNT; i++) {
+        bufferReady[i] = false;
+    }
     
     // Audio format: stereo 16-bit PCM at 48kHz
     AudioStreamBasicDescription desc = {
@@ -501,6 +523,9 @@ void sound_reset(void) {
     fill_buf = 0;
     play_buf = 0;
     buf_pos = 0;
+    for (int i = 0; i < BUF_COUNT; i++) {
+        bufferReady[i] = false;
+    }
     sound_refresh();
 }
 
