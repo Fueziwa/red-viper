@@ -35,7 +35,7 @@
 		/* Stubs */
 		A0000003201 /* minizip_stub.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003001 /* minizip_stub.c */; };
 		A0000003202 /* display_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003003 /* display_stubs.c */; };
-		A0000003203 /* sound_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003004 /* sound_stubs.c */; };
+		A0000003203 /* vb_sound_macos.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003007 /* vb_sound_macos.c */; };
 		A0000003204 /* input_stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = A0000003005 /* input_stubs.m */; };
 		A0000003205 /* drc_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = A0000003006 /* drc_stubs.c */; };
 
@@ -47,6 +47,7 @@
 		A0000004205 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004005 /* OpenGL.framework */; };
 		A0000004206 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004006 /* CoreVideo.framework */; };
 		A0000004207 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004007 /* GameController.framework */; };
+		A0000004208 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0000004008 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -96,6 +97,7 @@
 		A0000003004 /* sound_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sound_stubs.c; sourceTree = "<group>"; };
 		A0000003005 /* input_stubs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = input_stubs.m; sourceTree = "<group>"; };
 		A0000003006 /* drc_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = drc_stubs.c; sourceTree = "<group>"; };
+		A0000003007 /* vb_sound_macos.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = vb_sound_macos.c; sourceTree = "<group>"; };
 
 		/* Frameworks */
 		A0000004001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -105,6 +107,7 @@
 		A0000004005 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		A0000004006 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		A0000004007 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		A0000004008 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +122,7 @@
 				A0000004205 /* OpenGL.framework in Frameworks */,
 				A0000004206 /* CoreVideo.framework in Frameworks */,
 				A0000004207 /* GameController.framework in Frameworks */,
+				A0000004208 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +194,7 @@
 				A0000003004 /* sound_stubs.c */,
 				A0000003005 /* input_stubs.m */,
 				A0000003006 /* drc_stubs.c */,
+				A0000003007 /* vb_sound_macos.c */,
 				A0000006007 /* minizip */,
 			);
 			path = Stubs;
@@ -205,6 +210,7 @@
 				A0000004005 /* OpenGL.framework */,
 				A0000004006 /* CoreVideo.framework */,
 				A0000004007 /* GameController.framework */,
+				A0000004008 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -315,7 +321,7 @@
 				A0000002211 /* video_soft.cpp in Sources */,
 				A0000003201 /* minizip_stub.c in Sources */,
 				A0000003202 /* display_stubs.c in Sources */,
-				A0000003203 /* sound_stubs.c in Sources */,
+				A0000003203 /* vb_sound_macos.c in Sources */,
 				A0000003204 /* input_stubs.m in Sources */,
 				A0000003205 /* drc_stubs.c in Sources */,
 			);
