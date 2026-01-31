@@ -31,6 +31,7 @@ static uint8_t fill_buf = 0;
 static uint16_t buf_pos = 0;
 
 static volatile bool paused = false;
+static bool muted = false;
 
 static const int noise_bits[8] = {14, 10, 13, 4, 8, 6, 9, 11};
 
@@ -434,8 +435,9 @@ void sound_init(void) {
         AudioQueueEnqueueBuffer(audioQueue, audioBuffers[i], 0, NULL);
     }
     
-    // Set volume to 1.0
+    // Set volume to 1.0 and ensure unmuted state
     AudioQueueSetParameter(audioQueue, kAudioQueueParam_Volume, 1.0);
+    muted = false;
     
     // Start playback
     status = AudioQueueStart(audioQueue, NULL);
@@ -498,4 +500,17 @@ void sound_reset(void) {
         SNDMEM(S1INT + 0x40 * i) = 0;
     }
     sound_refresh();
+}
+
+// Toggle mute state
+void sound_toggle_mute(void) {
+    muted = !muted;
+    if (audioQueue) {
+        AudioQueueSetParameter(audioQueue, kAudioQueueParam_Volume, muted ? 0.0 : 1.0);
+    }
+}
+
+// Query mute state
+bool sound_is_muted(void) {
+    return muted;
 }
