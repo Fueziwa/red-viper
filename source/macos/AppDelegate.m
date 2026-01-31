@@ -12,6 +12,10 @@
 #import "InputConfigWindow.h"
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+// Sound functions from vb_sound_macos.c
+extern void sound_toggle_mute(void);
+extern bool sound_is_muted(void);
+
 @implementation AppDelegate {
     ControlsConfigController *_controlsConfigController;
 }
@@ -114,6 +118,14 @@
     
     NSMenu *emulationMenu = [[NSMenu alloc] initWithTitle:@"Emulation"];
     
+    NSMenuItem *muteItem = [[NSMenuItem alloc] 
+        initWithTitle:@"Toggle Mute"
+               action:@selector(toggleMute:)
+        keyEquivalent:@"m"];
+    [muteItem setTarget:self];
+    [emulationMenu addItem:muteItem];
+    [emulationMenu addItem:[NSMenuItem separatorItem]];
+    
     NSMenuItem *configControlsItem = [[NSMenuItem alloc] 
         initWithTitle:@"Input Configuration..."
                action:@selector(openInputConfiguration:)
@@ -203,6 +215,11 @@
 
 - (IBAction)openInputConfiguration:(id)sender {
     [InputConfigWindow showWindow];
+}
+
+- (IBAction)toggleMute:(id)sender {
+    sound_toggle_mute();
+    // No visual indicator per CONTEXT.md - audio simply stops/starts
 }
 
 #pragma mark - ROM Loading
