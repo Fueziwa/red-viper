@@ -205,44 +205,48 @@ extern VB_OPT tVBOpt;
 - (void)runFrame {
     if (!_romLoaded) return;
     
-    // Clear cache every frame like linux-test does
-    clearCache();
-    
-    // Check if we should render (same conditions as linux-test/main.c)
-    // Must check BEFORE v810_run() modifies state
-    BOOL shouldRender = (vb_state->tVIPREG.tFrame == 0 &&
-                         !vb_state->tVIPREG.drawing &&
-                         (vb_state->tVIPREG.XPCTRL & XPEN));
-    
-    if (shouldRender) {
-        // Update tile cache if needed
-        if (tDSPCACHE.CharCacheInvalid) {
-            update_texture_cache_soft();
+    // Thread-safe frame execution - prevents concurrent access from timer
+    // and any other callers (e.g., CVDisplayLink if misconfigured)
+    @synchronized(self) {
+        // Clear cache every frame like linux-test does
+        clearCache();
+        
+        // Check if we should render (same conditions as linux-test/main.c)
+        // Must check BEFORE v810_run() modifies state
+        BOOL shouldRender = (vb_state->tVIPREG.tFrame == 0 &&
+                             !vb_state->tVIPREG.drawing &&
+                             (vb_state->tVIPREG.XPCTRL & XPEN));
+        
+        if (shouldRender) {
+            // Update tile cache if needed
+            if (tDSPCACHE.CharCacheInvalid) {
+                update_texture_cache_soft();
+            }
+            
+            // Render to the non-displayed framebuffer
+            video_soft_render(!vb_state->tVIPREG.tDisplayedFB);
+            
+            // Clear cache flags after rendering
+            tDSPCACHE.CharCacheInvalid = false;
+            memset(tDSPCACHE.BGCacheInvalid, 0, sizeof(tDSPCACHE.BGCacheInvalid));
+            memset(tDSPCACHE.CharacterCache, 0, sizeof(tDSPCACHE.CharacterCache));
         }
         
-        // Render to the non-displayed framebuffer
-        video_soft_render(!vb_state->tVIPREG.tDisplayedFB);
+        // Always update the display (like linux-test sdl_flush)
+        // This shows whatever is in the current displayed framebuffer
+        if (self.frameCallback) {
+            self.frameCallback();
+        }
         
-        // Clear cache flags after rendering
-        tDSPCACHE.CharCacheInvalid = false;
-        memset(tDSPCACHE.BGCacheInvalid, 0, sizeof(tDSPCACHE.BGCacheInvalid));
-        memset(tDSPCACHE.CharacterCache, 0, sizeof(tDSPCACHE.CharacterCache));
+        // Write input state to hardware registers before CPU execution
+        // Games read input from 0x02000010 (SLB) and 0x02000014 (SHB)
+        uint16_t inputs = InputManager_currentControllerState();
+        vb_state->tHReg.SLB = inputs & 0xFF;
+        vb_state->tHReg.SHB = (inputs >> 8) & 0xFF;
+        
+        // Run one frame of emulation
+        v810_run();
     }
-    
-    // Always update the display (like linux-test sdl_flush)
-    // This shows whatever is in the current displayed framebuffer
-    if (self.frameCallback) {
-        self.frameCallback();
-    }
-    
-    // Write input state to hardware registers before CPU execution
-    // Games read input from 0x02000010 (SLB) and 0x02000014 (SHB)
-    uint16_t inputs = InputManager_currentControllerState();
-    vb_state->tHReg.SLB = inputs & 0xFF;
-    vb_state->tHReg.SHB = (inputs >> 8) & 0xFF;
-    
-    // Run one frame of emulation
-    v810_run();
 }
 
 - (void)reset {

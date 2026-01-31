@@ -88,6 +88,10 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     NSInteger _currentScale;
     CVDisplayLinkRef _displayLink;
     BOOL _running;
+    
+    // Frame pacing timer (50.27 Hz, decoupled from display refresh)
+    dispatch_source_t _frameTimer;
+    dispatch_queue_t _frameTimerQueue;
 }
 
 #pragma mark - Initialization
@@ -285,14 +289,14 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
         return;  // Already running
     }
     
-    // Create display link
+    // Create display link for vsync'd rendering (display refresh, NOT emulation)
     CVReturn result = CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
     if (result != kCVReturnSuccess) {
         NSLog(@"EmulatorView: Failed to create CVDisplayLink (error %d)", result);
         return;
     }
     
-    // Set the output callback
+    // Set the output callback - CVDisplayLink only triggers redraws, not emulation
     CVDisplayLinkSetOutputCallback(_displayLink, displayLinkCallback, (__bridge void *)self);
     
     // Set up the frame callback on EmulatorBridge to update texture when frame ready
@@ -307,14 +311,37 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
         });
     }];
     
-    // Start the display link
+    // Create dispatch_source timer for accurate 50.27 Hz frame pacing
+    // Virtual Boy runs at 50.27 Hz (20,000,000 cycles at ~1 MHz clock)
+    // Timer interval: 1,000,000,000 ns / 50.27 Hz ≈ 19,892,577 ns
+    _frameTimerQueue = dispatch_queue_create("com.redviper.frametimer", DISPATCH_QUEUE_SERIAL);
+    _frameTimer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _frameTimerQueue);
+    
+    // Set timer to fire every 19.89ms (50.27 Hz) with 1ms leeway
+    uint64_t intervalNs = (uint64_t)(1000000000.0 / 50.27);  // ~19,892,577 ns
+    dispatch_source_set_timer(_frameTimer, DISPATCH_TIME_NOW, intervalNs, 1000000);  // 1ms leeway
+    
+    dispatch_source_set_event_handler(_frameTimer, ^{
+        EmulatorView *strongSelf = weakSelf;
+        if (strongSelf && strongSelf->_running) {
+            if ([[EmulatorBridge sharedBridge] isROMLoaded]) {
+                [[EmulatorBridge sharedBridge] runFrame];
+            }
+        }
+    });
+    
+    // Start the display link (for vsync'd rendering)
     CVDisplayLinkStart(_displayLink);
+    
+    // Start the frame timer (for emulation at 50.27 Hz)
+    dispatch_resume(_frameTimer);
+    
     _running = YES;
     
     // Resume audio when emulation starts
     sound_resume();
     
-    NSLog(@"EmulatorView: Emulation started (CVDisplayLink active)");
+    NSLog(@"EmulatorView: Emulation started (50.27 Hz frame timer + CVDisplayLink for vsync)");
 }
 
 - (void)stopDisplayLink {
@@ -324,6 +351,13 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
     
     // Pause audio when emulation stops
     sound_pause();
+    
+    // Stop and release the frame timer
+    if (_frameTimer) {
+        dispatch_source_cancel(_frameTimer);
+        _frameTimer = nil;
+    }
+    _frameTimerQueue = nil;
     
     // Stop and release display link
     if (_displayLink) {
@@ -345,11 +379,12 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
         return;
     }
     
-    // Dispatch to main thread for UI and emulator work
+    // CVDisplayLink callback now ONLY triggers display refresh (vsync)
+    // Emulation runs on the separate dispatch_source timer at 50.27 Hz
+    // This may show some frames twice or skip some if rates don't align,
+    // but emulation runs at correct Virtual Boy speed
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[EmulatorBridge sharedBridge] isROMLoaded]) {
-            [[EmulatorBridge sharedBridge] runFrame];
-        }
+        [self setNeedsDisplay:YES];
     });
 }
 
