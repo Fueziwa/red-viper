@@ -28,6 +28,7 @@ static int constant_sample[5] = {-1, -1, -1, -1, -1};
 static bool changed_sample[5] = {0};
 
 static uint8_t fill_buf = 0;
+static uint8_t play_buf = 0;
 static uint16_t buf_pos = 0;
 
 static volatile bool paused = false;
@@ -354,6 +355,9 @@ void sound_refresh(void) {
             memset(bufferData[i], 0, SAMPLE_COUNT * 4);
         }
     }
+    fill_buf = 0;
+    play_buf = 0;
+    buf_pos = 0;
     paused = false;
 }
 
@@ -365,20 +369,12 @@ static void audioQueueCallback(void *userData, AudioQueueRef queue, AudioQueueBu
         // Fill with silence when paused
         memset(buffer->mAudioData, 0, SAMPLE_COUNT * 4);
     } else {
-        // Find which buffer index this is
-        int bufIndex = -1;
-        for (int i = 0; i < BUF_COUNT; i++) {
-            if (audioBuffers[i] == buffer) {
-                bufIndex = i;
-                break;
-            }
-        }
-        
-        if (bufIndex >= 0 && bufferData[bufIndex]) {
-            // Copy synthesized audio to the Audio Queue buffer
-            memcpy(buffer->mAudioData, bufferData[bufIndex], SAMPLE_COUNT * 4);
+        // Read from the next buffer in sequence (producer-consumer pattern)
+        if (bufferData[play_buf]) {
+            memcpy(buffer->mAudioData, bufferData[play_buf], SAMPLE_COUNT * 4);
+            // Advance consumer index
+            play_buf = (play_buf + 1) % BUF_COUNT;
         } else {
-            // Fallback: fill with silence
             memset(buffer->mAudioData, 0, SAMPLE_COUNT * 4);
         }
     }
@@ -390,6 +386,9 @@ static void audioQueueCallback(void *userData, AudioQueueRef queue, AudioQueueBu
 // Initialize audio system
 void sound_init(void) {
     memset(&sound_state, 0, sizeof(sound_state));
+    fill_buf = 0;
+    play_buf = 0;
+    buf_pos = 0;
     
     // Audio format: stereo 16-bit PCM at 48kHz
     AudioStreamBasicDescription desc = {
@@ -499,6 +498,9 @@ void sound_reset(void) {
     for (int i = 0; i < 6; i++) {
         SNDMEM(S1INT + 0x40 * i) = 0;
     }
+    fill_buf = 0;
+    play_buf = 0;
+    buf_pos = 0;
     sound_refresh();
 }
 
