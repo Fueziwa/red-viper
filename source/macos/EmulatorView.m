@@ -11,6 +11,7 @@
 #import "EmulatorView.h"
 #import <OpenGL/gl.h>
 #import <CoreVideo/CoreVideo.h>
+#import <mach/mach_time.h>
 #import "EmulatorBridge.h"
 #import "InputManager.h"
 
@@ -326,6 +327,27 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLink,
         if (strongSelf && strongSelf->_running) {
             if ([[EmulatorBridge sharedBridge] isROMLoaded]) {
                 [[EmulatorBridge sharedBridge] runFrame];
+                
+                // Debug: Frame rate logging (fires every second)
+#ifdef DEBUG
+                static uint64_t frameCount = 0;
+                static uint64_t lastLogTime = 0;
+                
+                frameCount++;
+                
+                // Get current time in nanoseconds
+                mach_timebase_info_data_t timebase;
+                mach_timebase_info(&timebase);
+                uint64_t now = mach_absolute_time();
+                uint64_t nowNs = now * timebase.numer / timebase.denom;
+                
+                // Log every second
+                if (nowNs - lastLogTime >= 1000000000ULL) {
+                    NSLog(@"Frame rate: %llu fps (target: 50.27)", frameCount);
+                    frameCount = 0;
+                    lastLogTime = nowNs;
+                }
+#endif
             }
         }
     });
